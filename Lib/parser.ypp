@@ -1,0 +1,131 @@
+%{
+    #include "output.hpp"
+    #include <iostream>
+
+    using namespace std;
+    void yyerror(char const*);
+    extern int yylex();
+    extern int yylineno;
+    /* For debugging */
+    // extern char* yytext;
+%}
+
+%token VOID INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE ID NUM STRING
+
+/* https://introcs.cs.princeton.edu/java/11precedence/ */
+%right ASSIGN
+%left OR
+%left AND
+%left EQ_RELOP
+%nonassoc RELOP
+
+%left PLUS_MINUS
+%left MUL_DIV
+%right NOT
+%right RPAREN
+%right LPAREN
+
+%nonassoc NOELSE
+%nonassoc ELSE
+%%
+
+Program :
+    Funcs                           {}
+;
+
+Funcs :
+    %empty                          {}
+    |   FuncDecl Funcs              {}
+;
+
+FuncDecl:
+    RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE {}
+;
+
+RetType:
+    Type                            {}
+    |   VOID                        {}
+;
+
+Formals:
+    %empty                          {}
+    | FormalsList                   {}
+;
+
+FormalsList:
+    FormalDecl                      {}
+    | FormalDecl COMMA FormalsList  {}
+;
+
+FormalDecl:
+    Type ID                         {}
+;
+
+Statements:
+    Statement                       {}
+    | Statements Statement          {}
+;
+
+Statement:
+    LBRACE Statements RBRACE                                    {}
+    | Type ID SC                                                {}
+    | Type ID ASSIGN Exp SC                                     {}
+    | ID ASSIGN Exp SC                                          {}
+    | Call SC                                                   {}
+    | RETURN SC                                                 {}
+    | RETURN Exp SC                                             {}
+    | IF LPAREN Exp RPAREN Statement %prec NOELSE               {}
+    | IF LPAREN Exp RPAREN Statement ELSE Statement %prec ELSE  {}
+    | WHILE LPAREN Exp RPAREN Statement %prec NOELSE            {}
+    | WHILE LPAREN Exp RPAREN Statement ELSE Statement          {}
+    | BREAK SC                                                  {}
+    | CONTINUE SC                                               {}
+;
+
+Call:
+    ID LPAREN ExpList RPAREN        {}
+    |   ID LPAREN RPAREN            {}
+;
+
+ExpList:
+    Exp                             {}
+    | Exp COMMA ExpList             {}
+;
+
+Type:
+    INT                             {}
+    |   BYTE                        {}
+    |   BOOL                        {}
+;
+
+Exp:
+    LPAREN Exp RPAREN               {}
+    | Exp PLUS_MINUS Exp            {}
+    | Exp MUL_DIV Exp               {}
+    | ID                            {}
+    | Call                          {}
+    | NUM                           {}
+    | NUM B                         {}
+    | STRING                        {}
+    | TRUE                          {}
+    | FALSE                         {}
+    | NOT Exp                       {}
+    | Exp AND Exp                   {}
+    | Exp OR Exp                    {}
+    | Exp EQ_RELOP Exp              {}
+    | Exp RELOP Exp                 {}
+;
+
+%%
+
+int main() {
+    yyparse();
+    return 0;
+}
+
+void yyerror(char const* s) {
+    output::errorSyn(yylineno);
+    /* For debugging */
+    /* cout << "syntax error from token: " << yytext << endl; */
+    exit(1);
+}
