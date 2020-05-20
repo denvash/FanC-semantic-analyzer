@@ -8,6 +8,7 @@
     void yyerror(char const*);
     extern int yylex();
     extern int yylineno;
+    extern TypeEnum;
     /* For debugging */
     // extern char* yytext;
 
