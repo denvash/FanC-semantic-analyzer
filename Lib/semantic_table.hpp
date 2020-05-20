@@ -58,8 +58,8 @@ public:
       table_t *table = new table_t();
       table->parent = tables.top();
       tables.push(table);
-      int* replica=offsets.top();
-      offsets.push(*replica);
+      int replica=offsets.top();
+      offsets.push(replica);
   }
 
     void popScope(){
