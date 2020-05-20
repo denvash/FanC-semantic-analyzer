@@ -1,6 +1,7 @@
 %{
     #include "output.hpp"
     #include "semantic_table.hpp"
+    #include "types.hpp"
     #include <iostream>
     #include <vector>
 
