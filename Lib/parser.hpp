@@ -3,7 +3,7 @@
 
 
 #include "semantic_table.hpp"
-
+#include "output.hpp";
 using namespace std;
 using namespace output;
 
