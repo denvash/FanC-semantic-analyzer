@@ -10,10 +10,29 @@
     /* For debugging */
     // extern char* yytext;
 
+    %union{
+      int i_value;
+      TypeEnum e_type;
+      string *str_value;
+      vector<TypeEnum> arguments_types;
+      Node *node;
+    }
+
 
 %}
 
 %token VOID INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE ID NUM STRING
+
+%token <str_value> STRING
+%token <i_value> NUM
+%token <node> ID
+%token <e_type> BOOL
+%token <e_type> B
+%token <e_type> BYTE
+%token <e_type> INT
+%token <e_type> VOID
+
+%type <e_type> Type , RetType
 
 /* https://introcs.cs.princeton.edu/java/11precedence/ */
 %right ASSIGN
