@@ -15,7 +15,7 @@
 %union{
      bool is_func;
     int size;
-    TypeEnum type;
+    TypeEnum typeT;
     vector<TypeEnum> arguments_types;
 }
 
@@ -31,8 +31,8 @@
 %token <e_type> INT
 %token <e_type> VOID
 
-%type <type> Type RetType
-%type <type> FormalsList FORMAL_COMMA FormalDecl
+%type <typeT> Type RetType
+%type <typeT> FormalsList FORMAL_COMMA FormalDecl
 
 
 /* https://introcs.cs.princeton.edu/java/11precedence/ */
