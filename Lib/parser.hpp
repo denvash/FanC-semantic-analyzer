@@ -33,7 +33,7 @@ public:
 
 class Str : public Node{
 public:
-    char* value
+    char* value;
     Str(char* name){
         value=name;
     }
