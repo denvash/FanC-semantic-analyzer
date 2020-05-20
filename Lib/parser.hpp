@@ -60,7 +60,7 @@ public:
 //};
 
 
-#define YYSTYPE Node*;
+#define YYSTYPE (Node)*;
 
 
 
