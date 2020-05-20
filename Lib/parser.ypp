@@ -79,11 +79,11 @@ FormalsList:
                                      $$->arguments_types=arguments_types;}
 ;
 
-FORMAL_COMMA: COMMA FormalsList  {$$->arguments_types=$2->arguments_types;}
+FORMAL_COMMA: COMMA FormalsList  {$$= new Variable(false,TYPE_UNDEFINED);$$->arguments_types=$2->arguments_types;}
 
 
 FormalDecl:
-    Type ID                         {$$$=new Variable(false,TYPE_UNDEFINED);$$->type=$1->type;}
+    Type ID                         {$$=new Variable(false,TYPE_UNDEFINED);$$->type=$1->type;}
 ;
 
 Statements:
