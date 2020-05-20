@@ -9,6 +9,7 @@
     extern int yylineno;
     /* For debugging */
     // extern char* yytext;
+    %define api.value.type {union YYSTYPE}
 
 
 %}
