@@ -24,11 +24,11 @@ SPACE   (\x20)
 TAB     (\x09)
 %%
 
-void                                                                  {yylval.e_type=TYPE_VOID;return VOID;}
-int                                                                   {yylval.e_type=TYPE_INT;return INT;}
-byte                                                                  {yylval.e_type=TYPE_BYTE;return BYTE;}
-b                                                                     {yylval.e_type=TYPE_B;return B;}
-bool                                                                  {yylval.e_type=TYPE_BOOL;return BOOL;}
+void                                                                  {yylval=new Type(TYPE_VOID);return VOID;}
+int                                                                   {yylval=new Type(TYPE_INT);return INT;}
+byte                                                                  {yylval=new Type(TYPE_BYTE);return BYTE;}
+b                                                                     {yylval=new Type(TYPE_B);return B;}
+bool                                                                  {yylval=new Type(TYPE_BOOL);return BOOL;}
 and                                                                   _(AND);
 or                                                                    _(OR);
 not                                                                   _(NOT);
