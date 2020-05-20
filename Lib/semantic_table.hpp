@@ -59,7 +59,7 @@ public:
       table->parent = tables.top();
       tables.push(table);
       int replica=offsets.top();
-      offsets.push(replica)*;
+      offsets.push((replica)*);
   }
 
     void popScope(){
