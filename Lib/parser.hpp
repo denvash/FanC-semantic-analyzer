@@ -7,7 +7,7 @@
 using namespace std;
 using namespace output;
 
-extern SemanticTable semantic_table;
+//extern SemanticTable semantic_table;
 extern int yylineno;
 
 class Node

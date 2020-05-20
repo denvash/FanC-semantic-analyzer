@@ -1,12 +1,12 @@
 %{
 
 #include "output.hpp"
-#include "parser.tab.hpp"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+
+#include "parser.tab.hpp"
 
 #define _(TOKEN) { return TOKEN; }
 #define _ERROR(NUM) { output::errorLex(NUM); exit(0); }
