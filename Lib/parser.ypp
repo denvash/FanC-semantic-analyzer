@@ -2,6 +2,7 @@
     #include "output.hpp"
     #include "semantic_table.hpp"
     #include <iostream>
+    #include <vector>
 
     using namespace std;
     void yyerror(char const*);
@@ -18,8 +19,8 @@
 
    int i_value;
    TypeEnum e_type;
-    variable_t type;
-   string *str_value;
+   variable_t type;
+   char* *str_value;
    vector<TypeEnum> arguments_types;
    Node *node;
 }
