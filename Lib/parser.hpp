@@ -13,6 +13,7 @@ extern int yylineno;
 class Node
 {
 public:
+    TypeEnum typee;
     virtual int get_value()
     {
         return 0;
