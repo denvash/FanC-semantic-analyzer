@@ -7,7 +7,7 @@
 using namespace std;
 using namespace output;
 
-extern SemanticTable semantic_tabl;
+extern SemanticTable semantic_table
 extern int yylineno;
 
 class Node
@@ -47,6 +47,8 @@ public:
     }
 };
 
+#define YYSTYPE Node*
+
 
 //class Variable: public Node{
 //public:
@@ -58,11 +60,6 @@ public:
 //        value=number;
 //    }
 //};
-
-
-#define YYSTYPE (Node)*;
-
-
 
 
 
