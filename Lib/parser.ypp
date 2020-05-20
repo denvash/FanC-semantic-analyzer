@@ -122,6 +122,7 @@ Exp:
 int main() {
    SemanticTable* st=new SemanticTable();
    st->initTable();
+   st.insertEntry("example",NULL);
    yyparse();
     return 0;
 }
