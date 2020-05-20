@@ -50,9 +50,9 @@ continue                                                              _(CONTINUE
 ==|!=                                                                 _(EQ_RELOP);
 \+|-                                                                  _(PLUS_MINUS)
 \*|\/                                                                 _(MUL_DIV)
-[a-zA-Z][a-zA-Z0-9]*                                                  {yylval.str_value=yytext;return ID;}
+[a-zA-Z][a-zA-Z0-9]*                                                  {yylval.str_value=yytext*;return ID;}
 0|[1-9][0-9]*                                                         {yylval.i_value=atoi(yytext);return NUM;}
-\"([^\n\r\"\\]|\\[rnt"\\])+\"                                         {yylval.str_value=yytext;return STRING;}
+\"([^\n\r\"\\]|\\[rnt"\\])+\"                                         {yylval.str_value=yytext*;return STRING;}
 {CR}|{LF}|{TAB}|{SPACE}                                               /* ignore */;
 "//"[^\r\n]*[\r|\n|\r\n]?                                             /* ignore */;
 .                                                                     _ERROR(yylineno);
