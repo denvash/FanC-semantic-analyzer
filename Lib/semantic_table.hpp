@@ -58,10 +58,7 @@ public:
       table_t *table = new table_t();
       table->parent = tables.top();
       tables.push(table);
-      int front=offsets.top();
       offsets.push(offsets.top());
-      offsets.top()+=1;
-      cout<<"front: "<<front<<endl;
   }
 
     void popScope(){
@@ -72,7 +69,11 @@ public:
     void insertEntry(string name) {
         tableEntry newTableEntry;
         newTableEntry.name = name;
-        newTableEntry.offset = (offsets.top());
+        newTableEntry.offset = offsets.top();
+        cout<<"newTableEntry offset before: "<<offsets.top() <<endl;
+        offsets.top()++;
+        cout<<"newTableEntry offset after: "<<offsets.top() <<endl;
+
     }
 
 
