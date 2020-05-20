@@ -59,7 +59,8 @@ public:
       table->parent = tables.top();
       tables.push(table);
       int replica=offsets.top();
-      offsets.push((replica)*);
+      cout<<"replica"<<replica<<endl;
+//      offsets.push((replica));
   }
 
     void popScope(){
@@ -70,7 +71,7 @@ public:
     void insertEntry(string name,variable_t type){
       tableEntry newTableEntry;
       newTableEntry.name=name;
-      newTableEntry.offset=(offsets.top())*;
+//      newTableEntry.offset=(offsets.top())*;
   }
 
 
