@@ -9,16 +9,7 @@
     extern int yylineno;
     /* For debugging */
     // extern char* yytext;
-#define YYSTYPE yystype
-struct yystype
-{
-  int i_value;
-  TypeEnum e_type;
-  variable_t type;
-  string *str_value;
-  vector<TypeEnum> arguments_types;
-  Node *node;
-};
+
 
 %}
 
