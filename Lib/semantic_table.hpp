@@ -68,7 +68,7 @@ public:
         offsets.pop();
     }
 
-    void insertEntry(string name,variable_t type){
+    void insertEntry(string name){
       tableEntry newTableEntry;
       newTableEntry.name=name;
 //      newTableEntry.offset=(offsets.top())*;
