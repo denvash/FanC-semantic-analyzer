@@ -33,8 +33,8 @@ public:
 
 class String : public Node{
 public:
-    string value;
-    String(string name){
+    char** value
+    String(char** name){
         value=name;
     }
 };
