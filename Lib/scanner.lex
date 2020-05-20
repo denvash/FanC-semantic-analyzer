@@ -52,7 +52,7 @@ continue                                                              _(CONTINUE
 \+|-                                                                  _(PLUS_MINUS)
 \*|\/                                                                 _(MUL_DIV)
 [a-zA-Z][a-zA-Z0-9]*                                                  {yylval=new Str(strdup(yytext));return ID;}
-0|[1-9][0-9]*                                                         {yylval.i_value=atoi(yytext);return NUM;}
+0|[1-9][0-9]*                                                         {yylval=new Num(atoi(yytext));return NUM;}
 \"([^\n\r\"\\]|\\[rnt"\\])+\"                                         {yylval=new Str(strdup(yytext));return STRING;}
 {CR}|{LF}|{TAB}|{SPACE}                                               /* ignore */;
 "//"[^\r\n]*[\r|\n|\r\n]?                                             /* ignore */;
