@@ -12,6 +12,13 @@
 
 %}
 
+%union{
+     bool is_func;
+    int size;
+    TypeEnum type;
+    vector<TypeEnum> arguments_types;
+}
+
 
 //%token VOID INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE ID NUM STRING
 %token  TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE
