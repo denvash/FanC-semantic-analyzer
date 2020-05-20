@@ -31,10 +31,10 @@ public:
     }
 };
 
-class String : public Node{
+class Str : public Node{
 public:
-    char** value
-    String(char** name){
+    char* value
+    Str(char* name){
         value=name;
     }
 };
