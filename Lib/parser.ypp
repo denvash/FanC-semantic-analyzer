@@ -11,37 +11,6 @@
     // extern char* yytext;
 
 
-
-    class Node
-    {
-    public:
-      virtual int get_value()
-      {
-        return 0;
-      }
-      virtual TypeEnum get_type()
-      {
-        return TYPE_UNDEFINED;
-      }
-    };
-
-    %union{
-        struct
-        {
-          int i_value;
-          TypeEnum e_type;
-          variable_t type;
-          string *str_value;
-          vector<TypeEnum> arguments_types;
-          Node *node;
-        };
-    }
-
-
-
-
-
-
 %}
 
 //%token VOID INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE ID NUM STRING
