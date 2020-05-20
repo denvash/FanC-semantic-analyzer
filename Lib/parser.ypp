@@ -35,7 +35,7 @@
 %token <e_type> VOID
 
 %type <e_type> Type RetType
-%type <type> funcType
+
 
 /* https://introcs.cs.princeton.edu/java/11precedence/ */
 %right ASSIGN
@@ -68,9 +68,8 @@ FuncDecl:
 ;
 
 NEW_FUNC : %empty                   {
-variable_t funcType;
-funcType.is_func=true;
-funcType.type=$1.e_type;
+$$.is_func=true;
+$$.type=$1.e_type;
 }
 
 
