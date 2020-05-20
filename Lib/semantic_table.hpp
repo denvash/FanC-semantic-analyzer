@@ -70,7 +70,7 @@ public:
     void insertEntry(string name) {
         tableEntry newTableEntry;
         newTableEntry.name = name;
-        newTableEntry.offset = (offsets.top())
+        newTableEntry.offset = (offsets.top());
     }
 
 
