@@ -1,5 +1,6 @@
 %{
     #include "parser.hpp"
+    #include "output.hpp"
     #include <iostream>
     using namespace std;
     void yyerror(char const*);
