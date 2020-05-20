@@ -26,8 +26,8 @@
 %token <e_type> INT
 %token <e_type> VOID
 
-%type <typee> Type RetType
-%type <typee> FormalsList FORMAL_COMMA FormalDecl
+//%type <type> Type RetType
+//%type <type> FormalsList FORMAL_COMMA FormalDecl
 
 
 /* https://introcs.cs.princeton.edu/java/11precedence/ */
@@ -72,7 +72,7 @@ Formals:
 ;
 
 FormalsList:
-    FormalDecl                      {$$->arguments_types.push_back($1->type);}
+    FormalDecl                      {$$=new Variable(false,TYPE_UNDEFINED);$$->arguments_types.push_back($1->type);}
     | FormalDecl FORMAL_COMMA       {vector<TypeEnum> arguments_types;
                                     arguments_types.push_back($1->type);
                                     arguments_types.insert(arguments_types.end(),$2->arguments_types.begin(),$2->arguments_types.end());
@@ -83,7 +83,7 @@ FORMAL_COMMA: COMMA FormalsList  {$$->arguments_types=$2->arguments_types;}
 
 
 FormalDecl:
-    Type ID                         {$$->type=$1->type;}
+    Type ID                         {$$$=new Variable(false,TYPE_UNDEFINED);$$->type=$1->type;}
 ;
 
 Statements:
