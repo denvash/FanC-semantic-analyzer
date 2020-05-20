@@ -9,10 +9,20 @@
     extern int yylineno;
     /* For debugging */
     // extern char* yytext;
-    %define api.value.type {union YYSTYPE}
+
 
 
 %}
+
+%union{
+
+   int i_value;
+   TypeEnum e_type;
+    variable_t type;
+   string *str_value;
+   vector<TypeEnum> arguments_types;
+   Node *node;
+}
 
 //%token VOID INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE ID NUM STRING
 %token  TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE

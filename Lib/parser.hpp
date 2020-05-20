@@ -24,15 +24,15 @@ public:
         return TYPE_UNDEFINED;
     }
 };
-
-union YYSTYPE{
-    int i_value;
-    TypeEnum e_type;
-    variable_t type;
-    string *str_value;
-    vector<TypeEnum> arguments_types;
-    Node *node;
-};
+//
+//union YYSTYPE{
+//    int i_value;
+//    TypeEnum e_type;
+//    variable_t type;
+//    string *str_value;
+//    vector<TypeEnum> arguments_types;
+//    Node *node;
+//};
 
 
 
