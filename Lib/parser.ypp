@@ -33,7 +33,7 @@
 %token <e_type> INT
 %token <e_type> VOID
 
-%type <e_type> Type , RetType
+%type <e_type> Type RetType
 
 /* https://introcs.cs.princeton.edu/java/11precedence/ */
 %right ASSIGN
