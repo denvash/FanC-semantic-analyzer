@@ -1,7 +1,7 @@
 %{
 #include "parser.tab.hpp"
 #include "output.hpp"
-#include "types.hpp"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
