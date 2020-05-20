@@ -119,7 +119,8 @@ Exp:
 %%
 
 int main() {
-    yyparse();
+   SemanticTable st=new SemanticTable();
+   yyparse();
     return 0;
 }
 

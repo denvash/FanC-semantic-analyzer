@@ -54,6 +54,7 @@ public:
     offsets.push(0);
   }
 
+
   ~SemanticTable(){};
 };
 
