@@ -12,6 +12,8 @@
 
 %option noyywrap
 %option yylineno
+%option yylval
+
 
 CR      (\x0D)
 LF      (\x0A)
