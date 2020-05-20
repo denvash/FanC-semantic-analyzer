@@ -4,6 +4,8 @@
 
 #ifndef FANC_SEMANTIC_ANALYZER_YYSTYPES_HPP
 #define FANC_SEMANTIC_ANALYZER_YYSTYPES_HPP
+
+#include "semantic_table.hpp"
 class Node
 {
 public:
