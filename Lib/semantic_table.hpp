@@ -58,9 +58,8 @@ public:
       table_t *table = new table_t();
       table->parent = tables.top();
       tables.push(table);
-      int replica=offsets.top();
-      cout<<"replica"<<replica<<endl;
-//      offsets.push((replica));
+      offsets.push(offsets.top());
+      offsets.top()++;
   }
 
     void popScope(){
@@ -71,8 +70,7 @@ public:
     void insertEntry(string name){
       tableEntry newTableEntry;
       newTableEntry.name=name;
-//      newTableEntry.offset=(offsets.top())*;
-  }
+      newTableEntry.offset=(offsets.top());
 
 
   ~SemanticTable(){};
