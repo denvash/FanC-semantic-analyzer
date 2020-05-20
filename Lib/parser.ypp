@@ -88,7 +88,6 @@ FormalsList:
 
 FORMAL_COMMA: COMMA FormalsList  {$$.arguments_types=$2.arguments_types;}
 
-INSERT_TYPE: %empty                              {}
 
 FormalDecl:
     Type ID                         {$$.type=Type.e_type;$$;}

@@ -10,7 +10,6 @@
 #define _(TOKEN) { return TOKEN; }
 #define _ERROR(NUM) { output::errorLex(NUM); exit(0); }
 
-extern yylval
 %}
 
 %option noyywrap
