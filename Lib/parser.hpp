@@ -30,6 +30,7 @@ struct yystype
   int i_value;
   TypeEnum e_type;
   string *str_value;
+  vector<TypeEnum> arguments_types;
   Node *node;
 };
 

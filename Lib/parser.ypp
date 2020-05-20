@@ -1,5 +1,6 @@
 %{
     #include "output.hpp"
+    #include "semantic_table.hpp"
     #include <iostream>
 
     using namespace std;
@@ -39,8 +40,15 @@ Funcs :
 ;
 
 FuncDecl:
-    RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE {}
+    RetType ID LPAREN Formals RPAREN LBRACE NEW_FUNC Statements RBRACE {}
 ;
+
+NEW_FUNC : %empty                   {
+variable_t funcType;
+funcType.is_func=true;
+funcType.type=$1.e_type;
+}
+}
 
 RetType:
     Type                            {}
@@ -53,12 +61,19 @@ Formals:
 ;
 
 FormalsList:
-    FormalDecl                      {}
-    | FormalDecl COMMA FormalsList  {}
+    FormalDecl                      {$$.arguments_types.push($1.type)}
+    | FormalDecl FORMAL_COMMA  {vector<TypeEnum> arguments_types;
+                                arguments_types.push($1.type);
+                                  arguments_types.insert(arguments_types.end(),$2.arguments_types.begin(),$2.arguments_types.end());
+                                  $$.arguments_types=arguments_types;}
 ;
 
+FORMAL_COMMA: COMMA FormalsList  {$$.arguments_types=$2.arguments_types;}
+
+INSERT_TYPE: %empty                              {}
+
 FormalDecl:
-    Type ID                         {}
+    Type ID                         {$$.type=Type.e_type;}
 ;
 
 Statements:
@@ -119,7 +134,9 @@ Exp:
 %%
 
 int main() {
-    yyparse();
+   SemanticTable* st=new SemanticTable();
+   st->initTable();
+   yyparse();
     return 0;
 }
 

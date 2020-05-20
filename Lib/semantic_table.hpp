@@ -13,7 +13,7 @@ using namespace std;
 typedef struct variable_t
 {
   bool is_func;
-  int preconditions_count;
+//  int preconditions_count;
   int size;
   TypeEnum type;
   vector<TypeEnum> arguments_types;
@@ -42,17 +42,37 @@ private:
 
 public:
   stack<int> offsets;
-  vector<tableEntry *> scopes;
+  vector<tableEntry *> functionScopes;
   variable_t func_info;
 
   void initTable()
   {
     table_t *table = new table_t();
     table->parent = NULL;
-    scopes = vector<tableEntry *>();
+    functionScopes = vector<tableEntry *>();
     tables.push(table);
     offsets.push(0);
   }
+
+  void pushNewScope(){
+      table_t *table = new table_t();
+      table->parent = tables.top();
+      tables.push(table);
+      offsets.push(offsets.top());
+  }
+
+    void popScope(){
+        tables.pop();
+        offsets.pop();
+    }
+
+    void insertEntry(string name,TypeEnum type) {
+        tableEntry newTableEntry;
+        newTableEntry.name = name;
+        newTableEntry.offset = offsets.top();
+        offsets.top()++;
+    }
+
 
   ~SemanticTable(){};
 };
