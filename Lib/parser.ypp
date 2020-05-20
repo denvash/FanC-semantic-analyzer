@@ -1,5 +1,5 @@
 %{
-    #include "parser.tab.hpp"
+    #include "parser.hpp"
     #include <iostream>
     using namespace std;
     void yyerror(char const*);
