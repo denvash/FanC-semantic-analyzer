@@ -54,6 +54,19 @@ public:
     offsets.push(0);
   }
 
+  void pushNewScope(){
+      table_t *table = new table_t();
+      table->parent = tables.top();
+      tables.push(table);
+      int* replica=offsets.top();
+      offsets.push(*replica);
+  }
+
+    void popScope(){
+        tables.pop();
+        offsets.pop();
+    }
+
 
   ~SemanticTable(){};
 };

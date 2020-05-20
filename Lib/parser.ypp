@@ -1,5 +1,6 @@
 %{
     #include "output.hpp"
+    #include "semantic_table.hpp"
     #include <iostream>
 
     using namespace std;
@@ -119,7 +120,8 @@ Exp:
 %%
 
 int main() {
-   SemanticTable st=new SemanticTable();
+   SemanticTable* st=new SemanticTable();
+   st->initTable();
    yyparse();
     return 0;
 }
