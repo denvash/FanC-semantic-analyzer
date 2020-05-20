@@ -1,7 +1,4 @@
 %{
-    #include "output.hpp"
-    #include "semantic_table.hpp"
-    #include "types.hpp"
     #include <iostream>
     #include <vector>
 
@@ -9,7 +6,6 @@
     void yyerror(char const*);
     extern int yylex();
     extern int yylineno;
-    extern TypeEnum;
     /* For debugging */
     // extern char* yytext;
 
