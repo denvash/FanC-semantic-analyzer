@@ -25,9 +25,8 @@
 //%token VOID INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE ID NUM STRING
 %token  TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE
 
-%token <str_value> STRING
+%token <str_value> STRING ID
 %token <i_value> NUM
-%token <node> ID
 %token <e_type> BOOL
 %token <e_type> B
 %token <e_type> BYTE
@@ -35,7 +34,7 @@
 %token <e_type> VOID
 
 %type <e_type> Type RetType
-%type <type> NEW_FUNC
+%type <type> FormalsList FORMAL_COMMA FormalDecl
 
 
 /* https://introcs.cs.princeton.edu/java/11precedence/ */
@@ -65,13 +64,8 @@ Funcs :
 ;
 
 FuncDecl:
-    RetType ID LPAREN Formals RPAREN LBRACE NEW_FUNC Statements RBRACE {}
+    RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE {}
 ;
-
-NEW_FUNC : %empty                   {
-$$.is_func=true;
-$$.type=$1.e_type;
-}
 
 
 RetType:
@@ -97,7 +91,7 @@ FORMAL_COMMA: COMMA FormalsList  {$$.arguments_types=$2.arguments_types;}
 INSERT_TYPE: %empty                              {}
 
 FormalDecl:
-    Type ID                         {$$.type=Type.e_type;}
+    Type ID                         {$$.type=Type.e_type;$$;}
 ;
 
 Statements:
