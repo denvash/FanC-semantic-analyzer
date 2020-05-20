@@ -1,7 +1,5 @@
 %{
     #include <iostream>
-    #include parser.hpp
-
     using namespace std;
     void yyerror(char const*);
     extern int yylex();
