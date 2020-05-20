@@ -16,6 +16,7 @@
      bool is_func;
     int size;
     TypeEnum typeT;
+    Type typee;
     vector<TypeEnum> arguments_types;
 }
 
@@ -31,8 +32,8 @@
 %token <e_type> INT
 %token <e_type> VOID
 
-%type <typeT> Type RetType
-%type <typeT> FormalsList FORMAL_COMMA FormalDecl
+%type <typee> Type RetType
+%type <typee> FormalsList FORMAL_COMMA FormalDecl
 
 
 /* https://introcs.cs.princeton.edu/java/11precedence/ */
