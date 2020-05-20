@@ -1,17 +1,34 @@
 %{
+    #include "parser.hpp"
     #include "output.hpp"
-    #include "semantic_table.hpp"
     #include <iostream>
-
     using namespace std;
     void yyerror(char const*);
     extern int yylex();
     extern int yylineno;
     /* For debugging */
     // extern char* yytext;
+
+
+
 %}
 
-%token VOID INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE ID NUM STRING
+
+
+//%token VOID INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE ID NUM STRING
+%token  TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE
+
+%token <str_value> STRING ID
+%token <i_value> NUM
+%token <e_type> BOOL
+%token <e_type> B
+%token <e_type> BYTE
+%token <e_type> INT
+%token <e_type> VOID
+
+//%type <type> Type RetType
+//%type <type> FormalsList FORMAL_COMMA FormalDecl
+
 
 /* https://introcs.cs.princeton.edu/java/11precedence/ */
 %right ASSIGN
@@ -40,15 +57,9 @@ Funcs :
 ;
 
 FuncDecl:
-    RetType ID LPAREN Formals RPAREN LBRACE NEW_FUNC Statements RBRACE {}
+    RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE {}
 ;
 
-NEW_FUNC : %empty                   {
-variable_t funcType;
-funcType.is_func=true;
-funcType.type=$1.e_type;
-}
-}
 
 RetType:
     Type                            {}
@@ -61,19 +72,18 @@ Formals:
 ;
 
 FormalsList:
-    FormalDecl                      {$$.arguments_types.push($1.type)}
-    | FormalDecl FORMAL_COMMA  {vector<TypeEnum> arguments_types;
-                                arguments_types.push($1.type);
-                                  arguments_types.insert(arguments_types.end(),$2.arguments_types.begin(),$2.arguments_types.end());
-                                  $$.arguments_types=arguments_types;}
+    FormalDecl                      {$$->arguments_types.push_back($1->type);}
+    | FormalDecl FORMAL_COMMA       {vector<TypeEnum> arguments_types;
+                                    arguments_types.push_back($1->type);
+                                    arguments_types.insert(arguments_types.end(),$2->arguments_types.begin(),$2->arguments_types.end());
+                                     $$->arguments_types=arguments_types;}
 ;
 
-FORMAL_COMMA: COMMA FormalsList  {$$.arguments_types=$2.arguments_types;}
+FORMAL_COMMA: COMMA FormalsList  {$$->arguments_types=$2->arguments_types;}
 
-INSERT_TYPE: %empty                              {}
 
 FormalDecl:
-    Type ID                         {$$.type=Type.e_type;}
+    Type ID                         {$$->type=$1->type;}
 ;
 
 Statements:

@@ -26,6 +26,8 @@ namespace output
   void errorUnexpectedContinue(int lineno);
   void errorMainMissing();
   void errorByteTooLarge(int lineno, const string &value);
+
+
 } // namespace output
 
 #endif
