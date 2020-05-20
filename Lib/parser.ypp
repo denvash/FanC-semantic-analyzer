@@ -24,8 +24,8 @@
 %token <e_type> INT
 %token <e_type> VOID
 
-%type <Type> Type RetType
-%type <Variable> FormalsList FORMAL_COMMA FormalDecl
+%type <type> Type RetType
+%type <type> FormalsList FORMAL_COMMA FormalDecl
 
 
 /* https://introcs.cs.princeton.edu/java/11precedence/ */
