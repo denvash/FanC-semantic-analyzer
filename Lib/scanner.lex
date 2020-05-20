@@ -1,6 +1,7 @@
 %{
 #include "parser.tab.hpp"
 #include "output.hpp"
+#include "types.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,6 +9,7 @@
 
 #define _(TOKEN) { return TOKEN; }
 #define _ERROR(NUM) { output::errorLex(NUM); exit(0); }
+
 extern yylval
 %}
 
@@ -22,7 +24,7 @@ SPACE   (\x20)
 TAB     (\x09)
 %%
 
-void                                                                  _(VOID);
+void                                                                  {yylval.e_type=TYPE_VOID;return VOID;}
 int                                                                   _(INT);
 byte                                                                  _(BYTE);
 b                                                                     _(B);
@@ -56,3 +58,5 @@ continue                                                              _(CONTINUE
 "//"[^\r\n]*[\r|\n|\r\n]?                                             /* ignore */;
 .                                                                     _ERROR(yylineno);
 %%
+
+
