@@ -48,16 +48,16 @@ public:
 };
 
 
-class Variable: public Node{
-public:
-    bool is_func;
-    int size;
-    TypeEnum type;
-    vector<TypeEnum> arguments_types;
-    Variable(int number){
-        value=number;
-    }
-};
+//class Variable: public Node{
+//public:
+//    bool is_func;
+//    int size;
+//    TypeEnum type;
+//    vector<TypeEnum> arguments_types;
+//    Variable(int number){
+//        value=number;
+//    }
+//};
 
 
 #define YYSTYPE Node*
