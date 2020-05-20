@@ -58,8 +58,10 @@ public:
       table_t *table = new table_t();
       table->parent = tables.top();
       tables.push(table);
+      int front=offsets.top();
       offsets.push(offsets.top());
       offsets.top()+=1;
+      cout<<"front: "<<front<<endl;
   }
 
     void popScope(){
