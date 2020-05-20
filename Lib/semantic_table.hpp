@@ -59,7 +59,7 @@ public:
       table->parent = tables.top();
       tables.push(table);
       offsets.push(offsets.top());
-//      offsets.top()+=1;
+      offsets.top()+=1;
   }
 
     void popScope(){
@@ -67,10 +67,11 @@ public:
         offsets.pop();
     }
 
-    void insertEntry(string name){
-      tableEntry newTableEntry;
-      newTableEntry.name=name;
-      newTableEntry.offset=(offsets.top());
+    void insertEntry(string name) {
+        tableEntry newTableEntry;
+        newTableEntry.name = name;
+        newTableEntry.offset = (offsets.top())
+    }
 
 
   ~SemanticTable(){};
