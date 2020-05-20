@@ -25,10 +25,10 @@ TAB     (\x09)
 %%
 
 void                                                                  {yylval.e_type=TYPE_VOID;return VOID;}
-int                                                                   _(INT);
-byte                                                                  _(BYTE);
-b                                                                     _(B);
-bool                                                                  _(BOOL);
+int                                                                   {yylval.e_type=TYPE_INT;return INT;}
+byte                                                                  {yylval.e_type=TYPE_BYTE;return BYTE;}
+b                                                                     {yylval.e_type=TYPE_B;return B;}
+bool                                                                  {yylval.e_type=TYPE_BOOL;return BOOL;}
 and                                                                   _(AND);
 or                                                                    _(OR);
 not                                                                   _(NOT);
@@ -51,9 +51,9 @@ continue                                                              _(CONTINUE
 ==|!=                                                                 _(EQ_RELOP);
 \+|-                                                                  _(PLUS_MINUS)
 \*|\/                                                                 _(MUL_DIV)
-[a-zA-Z][a-zA-Z0-9]*                                                  _(ID);
-0|[1-9][0-9]*                                                         _(NUM);
-\"([^\n\r\"\\]|\\[rnt"\\])+\"                                         _(STRING);
+[a-zA-Z][a-zA-Z0-9]*                                                  {yylval.str_value=yytext;return ID;}
+0|[1-9][0-9]*                                                         {yylval.i_value=atoi(yytext);return VOID;}
+\"([^\n\r\"\\]|\\[rnt"\\])+\"                                         {yylval.str_value=yytext;return STRING;}
 {CR}|{LF}|{TAB}|{SPACE}                                               /* ignore */;
 "//"[^\r\n]*[\r|\n|\r\n]?                                             /* ignore */;
 .                                                                     _ERROR(yylineno);
