@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include "parser.hpp"
-
+#include "parser.tab.hpp"
 
 #define _(TOKEN) { return TOKEN; }
 #define _ERROR(NUM) { output::errorLex(NUM); exit(0); }
