@@ -59,7 +59,7 @@ public:
       table->parent = tables.top();
       tables.push(table);
       offsets.push(offsets.top());
-      offsets.top()+=1;
+//      offsets.top()+=1;
   }
 
     void popScope(){
