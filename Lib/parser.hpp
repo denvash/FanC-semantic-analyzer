@@ -33,4 +33,7 @@ struct yystype
   Node *node;
 };
 
+void init_program();
+void close_program();
+
 #endif /* PARSER_HPP */

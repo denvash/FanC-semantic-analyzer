@@ -1,14 +1,15 @@
 %{
     #include "output.hpp"
+    #include "parser.hpp"
     #include <iostream>
 
-    using namespace std;
-    void yyerror(char const*);
-    extern int yylex();
-    extern int yylineno;
     /* For debugging */
     extern char* yytext;
+    extern int yylex();
+    extern int yylineno;
+    using namespace std;
     void printRule(char const*);
+    void yyerror(char const*);
 %}
 
 %token VOID INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE ID NUM STRING
@@ -32,7 +33,7 @@
 
 Program :
     Funcs                           {
-      printRule("Program Funcs");
+      init_program();
     }
 ;
 
@@ -123,6 +124,7 @@ Exp:
 
 int main() {
     yyparse();
+    close_program();
     return 0;
 }
 
