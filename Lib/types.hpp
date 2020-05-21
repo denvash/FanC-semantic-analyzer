@@ -8,7 +8,9 @@ typedef enum
   TYPE_BYTE,
   TYPE_INT,
   TYPE_VOID,
-  TYPE_UNDEFINED
+  TYPE_STRING,
+  TYPE_UNDEFINED,
+  HELP_TYPE_NUM_TO_STRING
 } TypeEnum;
 
 #endif /* TYPES_HPP */

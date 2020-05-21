@@ -3,9 +3,9 @@
 
 #include "output.hpp"
 #include "semantic_table.hpp"
+#include "error_handler.hpp"
 
 using namespace std;
-using namespace output;
 
 #define YYSTYPE yystype
 

@@ -7,7 +7,8 @@
     extern int yylex();
     extern int yylineno;
     /* For debugging */
-    // extern char* yytext;
+    extern char* yytext;
+    void printRule(char const*);
 %}
 
 %token VOID INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE ID NUM STRING
@@ -30,7 +31,9 @@
 %%
 
 Program :
-    Funcs                           {}
+    Funcs                           {
+      printRule("Program Funcs");
+    }
 ;
 
 Funcs :
@@ -126,6 +129,10 @@ int main() {
 void yyerror(char const* s) {
     output::errorSyn(yylineno);
     /* For debugging */
-    /* cout << "syntax error from token: " << yytext << endl; */
+    cout << "syntax error from token: " << yytext << endl;
     exit(1);
+}
+
+void printRule(char const* rule){
+    cout << "rule " << rule << endl;
 }
