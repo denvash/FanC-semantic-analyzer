@@ -40,6 +40,34 @@ void close_scope();
 void declare_function(yystype y_identifier, yystype y_arguments);
 void declare_formals(yystype yy_formals);
 
+class Exp : public Node
+{
+public:
+  int value;
+  string id;
+  TypeEnum type;
+
+  Exp(string identifier)
+  {
+    if (!semantic_table.is_var_exists(identifier))
+      error_handle(output::errorUndef, yylineno, identifier);
+    auto entry = semantic_table.get_entry(identifier);
+    id = identifier;
+    type = entry.type_info.type;
+  }
+
+  Exp(yystype a, string op, yystype b); /* implemented in cpp */
+
+  virtual int get_value()
+  {
+    return this->value;
+  }
+  virtual TypeEnum get_type()
+  {
+    return this->type;
+  }
+};
+
 class FormalsList : public Node
 {
 public:

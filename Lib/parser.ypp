@@ -69,18 +69,26 @@ Formals:
                                       $$.node = NULL;
                                     }
     | FormalsList                   {
-                                      debugPrint("Formals FormalsList");
-                                      $$ = $1;
-                                    }
-    ;
+      debugPrint("Formals FormalsList");
+      $$ = $1;
+    };
 
 FormalsList:
-    FormalDecl                      {}
-    | FormalDecl COMMA FormalsList  {}
-    ;
+    FormalDecl                      {
+      debugPrint("FormalsList FormalDecl");
+      $$.node = new FormalsList($1);
+    }
+    | FormalDecl COMMA FormalsList  {
+      debugPrint("FormalsList FormalDecl COMMA FormalsList");
+      $$.node = new FormalsList($1, $3);
+    };
 
 FormalDecl:
-    Type ID                         { $$.e_type = $1.e_type; $$.str_value = $2.str_value; }
+    Type ID                         {
+        debugPrint("FormalDecl Type ID");
+        $$.e_type = $1.e_type;
+        $$.str_value = $2.str_value;
+      }
     ;
 
 Statements:
@@ -131,17 +139,24 @@ ExpList:
 Type:
     INT                             { $$.e_type = TYPE_INT; }
     |   BYTE                        { $$.e_type = TYPE_BYTE; }
-    |   BOOL                        { $$.e_type = TYPE_BOOL; }
+    |   BOOL                        {
+        debugPrint("Type BOOL");
+        $$.e_type = TYPE_BOOL;
+      }
 ;
 
 Exp:
     LPAREN Exp RPAREN               {}
     | Exp PLUS_MINUS Exp            {}
     | Exp MUL_DIV Exp               {}
-    | ID                            {}
-    | Call                          {}
-    | NUM                           {}
-    | NUM B                         {}
+    | ID                            {
+                                      $$.node = new Exp(*$1.str_value);
+                                      $$.i_value = $$.node->get_value();
+                                      $$.e_type = $$.node ->get_type();
+                                    }
+    | Call                          { debugPrint("Exp Call"); }
+    | NUM                           { $$.e_type = TYPE_INT; $$.i_value = $1.i_value; }
+    | NUM B                         { $$.e_type = TYPE_BYTE; $$.i_value = $1.i_value; }
     | STRING                        {}
     | TRUE                          {}
     | FALSE                         {}
@@ -150,7 +165,7 @@ Exp:
     | Exp OR Exp                    {}
     | Exp EQ_RELOP Exp              {}
     | Exp RELOP Exp                 {}
-;
+    ;
 
 %%
 

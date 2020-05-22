@@ -1,13 +1,12 @@
 %{
   #include "parser.hpp"
   #include "parser.tab.hpp"
-  #include <stdio.h>
-  #include <stdlib.h>
   #include <string.h>
-  #include <stdbool.h>
+  #include <stdarg.h>
 
   #define _(TOKEN) { return TOKEN; }
   #define _ERROR(NUM) { output::errorLex(NUM); exit(0); }
+  #define ASSIGN_YYLVAL { yylval.str_value = new string(yytext); }
 %}
 
 %option noyywrap
@@ -42,13 +41,37 @@ continue                       _(CONTINUE);
 \{                             _(LBRACE);
 \}                             _(RBRACE);
 =                              _(ASSIGN);
->=|<=|<|>                      _(RELOP);
-==|!=                          _(EQ_RELOP);
-\+|-                           _(PLUS_MINUS)
-\*|\/                          _(MUL_DIV)
-[a-zA-Z][a-zA-Z0-9]*           { yylval.str_value = new string(yytext); _(ID); };
-0|[1-9][0-9]*                  _(NUM);
-\"([^\n\r\"\\]|\\[rnt"\\])+\"  _(STRING);
+>=|<=|<|>                      {
+                                  ASSIGN_YYLVAL;
+                                  _(RELOP);
+                               }
+==|!=                          {
+                                  ASSIGN_YYLVAL;
+                                  _(EQ_RELOP);
+                               }
+\+|-                           {
+                                  ASSIGN_YYLVAL;
+                                  _(PLUS_MINUS);
+                               }
+\*|\/                          {
+                                  ASSIGN_YYLVAL;
+                                  _(MUL_DIV);
+                               }
+[a-zA-Z][a-zA-Z0-9]*           {
+                                  ASSIGN_YYLVAL;
+                                  _(ID);
+                               }
+0|[1-9][0-9]*                  {
+                                  yylval.e_type = TYPE_INT;
+                                  yylval.i_value = atoi(yytext);
+                                  _(NUM);
+                               }
+\"([^\n\r\"\\]|\\[rnt"\\])+\"  {
+                                  yylval.e_type = TYPE_STRING;
+                                  ASSIGN_YYLVAL;
+                                  yylval.i_value = 1;
+                                  _(STRING);
+                               }
 {CR}|{LF}|{TAB}|{SPACE}        /* ignore */;
 "//"[^\r\n]*[\r|\n|\r\n]?      /* ignore */;
 .                              _ERROR(yylineno);

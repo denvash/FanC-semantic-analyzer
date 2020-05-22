@@ -1,12 +1,14 @@
 [semantic rule] Init program
 [parser] init table
-[table] After init table
 [table] open scope
 [semantic rule] RetType VOID
+[semantic rule] Type BOOL
+[semantic rule] FormalDecl Type ID
+[semantic rule] FormalsList FormalDecl
 [semantic rule] Formals FormalsList
 [semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
 [parser] declaring function
-[parser] In declaring function, no arguments
+[parser:function] printOk
 [semantic rule] OpenScope
 [table] open scope
 [semantic rule] Statements Statement
@@ -17,24 +19,10 @@
 [semantic rule] Formals Epsilon
 [semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
 [parser] declaring function
+[parser:function] main
 [parser] In declaring function, no arguments
 [semantic rule] OpenScope
 [table] open scope
 [semantic rule] Statements Statement
 [semantic rule] Statements Statements Statement
-[semantic rule] Statements Statements Statement
-[semantic rule] Statements Statements Statement
-[semantic rule] CloseScope
-[parser] closing scope
----end scope---
-[semantic rule] FuncDecl Funcs
-[semantic rule] FuncDecl Funcs
-[semantic rule] Program Funcs
-[parser] close program
-[table] Getting functions args
-[parser] closing scope
----end scope---
-print (STRING)->VOID 0
-printi (STRING,INT)->VOID 0
-printOk ()->VOID 0
-main ()->VOID 0
+line 9: variable x is not defined

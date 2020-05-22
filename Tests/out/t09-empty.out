@@ -1,11 +1,11 @@
 [semantic rule] Init program
 [parser] init table
-[table] After init table
 [table] open scope
 [semantic rule] RetType VOID
 [semantic rule] Formals Epsilon
 [semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
 [parser] declaring function
+[parser:function] main
 [parser] In declaring function, no arguments
 [semantic rule] OpenScope
 [table] open scope

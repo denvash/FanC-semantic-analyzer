@@ -71,7 +71,6 @@ public:
     func_scopes = vector<table_entry_t *>();
     tables.push(firstTable);
     offsets.push(0);
-    debugTable("After init table");
   }
 
   void close_scope()
@@ -138,7 +137,7 @@ public:
     tables.top()->table.push_back(entry);
   }
 
-  table_entry_t get_table_entry(string name)
+  table_entry_t get_entry(string name)
   {
     auto entry = new table_entry_t();
     entry->name = "";
@@ -172,7 +171,7 @@ public:
 
   bool is_func_exists(string name)
   {
-    auto table_entry = get_table_entry(name);
+    auto table_entry = get_entry(name);
     if (table_entry.name != EMPTY_ENTRY)
     {
       return table_entry.type_info.is_func;
@@ -189,7 +188,7 @@ public:
       debugTable("Func not exists");
       return vector<TypeEnum>(1, TYPE_UNDEFINED);
     }
-    return this->get_table_entry(identifier).type_info.arg_types;
+    return this->get_entry(identifier).type_info.arg_types;
   }
 
   TypeEnum get_function_type(const string &identifier)
@@ -198,7 +197,7 @@ public:
     {
       return TYPE_UNDEFINED;
     }
-    return this->get_table_entry(identifier).type_info.type;
+    return this->get_entry(identifier).type_info.type;
   }
 
   table_entry_t *get_last_function_in_scope()
@@ -209,6 +208,15 @@ public:
   TypeEnum get_current_function_type()
   {
     return this->func_info.type;
+  }
+
+  bool is_var_exists(string name)
+  {
+    if (exists(name) && !get_entry(name).type_info.is_func)
+    {
+      return true;
+    }
+    return false;
   }
 
   ~SemanticTable(){};

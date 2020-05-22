@@ -1,10 +1,10 @@
 [semantic rule] Init program
 [parser] init table
-[table] After init table
 [table] open scope
 [semantic rule] Formals Epsilon
 [semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
 [parser] declaring function
+[parser:function] return6
 [parser] In declaring function, no arguments
 [semantic rule] OpenScope
 [table] open scope
@@ -16,17 +16,10 @@
 [semantic rule] Formals Epsilon
 [semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
 [parser] declaring function
+[parser:function] main
 [parser] In declaring function, no arguments
 [semantic rule] OpenScope
 [table] open scope
+[semantic rule] Type BOOL
 [semantic rule] Statements Statement
-[semantic rule] OpenScope
-[table] open scope
-[semantic rule] Statements Statement
-[semantic rule] Statements Statements Statement
-[semantic rule] CloseScope
-[parser] closing scope
----end scope---
-[semantic rule] Statement OpenScope LBRACE Statements RBRACE CloseScope
-line 12: syntax error
-syntax error from token: error
+line 7: variable c is not defined

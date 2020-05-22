@@ -186,6 +186,7 @@ void return_value_check(TypeEnum return_type)
 void declare_function(yystype y_identifier, yystype y_arguments)
 {
   debugParser("declaring function");
+  cout << "[parser:function] " << *y_identifier.str_value << endl;
   if (semantic_table.exists(*y_identifier.str_value))
   {
     error_handle(output::errorDef, yylineno, *y_identifier.str_value);
@@ -243,4 +244,122 @@ void declare_formals(yystype yy_formals)
   }
   /* reset offsets */
   semantic_table.offsets.top() = 0;
+}
+
+Exp::Exp(yystype a, string op, yystype b)
+{
+  /* check types */
+  bool mismatch = false;
+  if (op == "and")
+  {
+    if (a.e_type != TYPE_BOOL || b.e_type != TYPE_BOOL)
+      error_handle(output::errorMismatch, yylineno);
+    value = a.i_value && b.i_value;
+    type = TYPE_BOOL;
+  }
+  else if (op == "or")
+  {
+    if (a.e_type != TYPE_BOOL || b.e_type != TYPE_BOOL)
+      error_handle(output::errorMismatch, yylineno);
+    value = a.i_value || b.i_value;
+    type = TYPE_BOOL;
+  }
+  else if (op == "+")
+  {
+    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
+        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+      mismatch = true;
+    if (a.e_type == TYPE_INT || b.e_type == TYPE_INT)
+      type = TYPE_INT;
+    else
+      type = TYPE_BYTE;
+    value = a.i_value + b.i_value;
+  }
+  else if (op == "-")
+  {
+    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
+        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+      mismatch = true;
+    if (a.e_type == TYPE_INT || b.e_type == TYPE_INT)
+      type = TYPE_INT;
+    else
+      type = TYPE_BYTE;
+    value = a.i_value - b.i_value;
+  }
+  else if (op == "*")
+  {
+    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
+        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+      mismatch = true;
+    if (a.e_type == TYPE_INT || b.e_type == TYPE_INT)
+      type = TYPE_INT;
+    else
+      type = TYPE_BYTE;
+    value = a.i_value * b.i_value;
+  }
+  else if (op == "/")
+  {
+    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
+        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+      mismatch = true;
+    if (a.e_type == TYPE_INT || b.e_type == TYPE_INT)
+      type = TYPE_INT;
+    else
+      type = TYPE_BYTE;
+    // value = a.i_value / b.i_value;
+  }
+  else if (op == "<")
+  {
+    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
+        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+      mismatch = true;
+    type = TYPE_BOOL;
+    value = a.i_value < b.i_value;
+  }
+  else if (op == "<=")
+  {
+    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
+        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+      mismatch = true;
+    type = TYPE_BOOL;
+    value = a.i_value <= b.i_value;
+  }
+  else if (op == "==")
+  {
+    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
+        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+    {
+      mismatch = true;
+    }
+    type = TYPE_BOOL;
+    value = a.i_value == b.i_value;
+  }
+  else if (op == ">=")
+  {
+    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
+        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+      mismatch = true;
+    type = TYPE_BOOL;
+    value = a.i_value >= b.i_value;
+  }
+  else if (op == ">")
+  {
+    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
+        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+      mismatch = true;
+    type = TYPE_BOOL;
+    value = a.i_value > b.i_value;
+  }
+  else if (op == "!=")
+  {
+    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
+        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+      mismatch = true;
+    type = TYPE_BOOL;
+    value = a.i_value != b.i_value;
+  }
+  if (mismatch)
+  {
+    error_handle(output::errorMismatch, yylineno);
+  }
 }
