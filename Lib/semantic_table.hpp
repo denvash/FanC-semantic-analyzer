@@ -184,7 +184,6 @@ public:
       debugTable("Func not exists");
       return vector<TypeEnum>(1, TYPE_UNDEFINED);
     }
-    cout << this->get_table_entry(identifier).type_info.type << endl;
     return this->get_table_entry(identifier).type_info.arg_types;
   }
 

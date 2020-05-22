@@ -49,7 +49,7 @@ Funcs :
 
 FuncDecl:
     RetType ID LPAREN Formals RPAREN {
-                                       debugPrint("FuncDecl RetType ID LPAREN Formals RPAREN OpenScope LBRACE Statements RBRACE CloseScope");
+                                       debugPrint("FuncDecl RetType ID LPAREN Formals RPAREN");
                                        $2.e_type = $1.e_type;
                                        declare_function($2,$4);
                                        declare_formals($4);

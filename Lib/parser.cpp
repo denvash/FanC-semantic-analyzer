@@ -122,6 +122,7 @@ void init_program()
 
 void close_scope(bool is_function_scope)
 {
+  debugParser("closing scope");
   output::endScope();
   auto entries = semantic_table.get_current_inner_scope();
   for (int i = 0; i < entries.size(); i++)
@@ -160,7 +161,7 @@ void close_program()
     debugParser("No func exists");
     error_handle(output::errorMainMissing);
   }
-  if (semantic_table.get_function_args("main").front() != TYPE_UNDEFINED)
+  if (semantic_table.get_function_args("main").front() != TYPE_VOID)
   {
     debugParser("Main with args");
     error_handle(output::errorMainMissing);
@@ -197,6 +198,7 @@ void declare_function(yystype y_identifier, yystype y_arguments)
   /* if no arguments to function, args is null */
   if (y_arguments.node == NULL)
   {
+    debugParser("In declaring function, no arguments");
     func.arg_types.push_back(TYPE_VOID);
   }
   else
