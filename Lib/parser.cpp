@@ -3,25 +3,80 @@
 SemanticTable semantic_table;
 
 /*
-  TYPE_B,
-  TYPE_BOOL,
-  TYPE_BYTE,
-  TYPE_INT,
-  TYPE_VOID,
-  TYPE_STRING,
   TYPE_UNDEFINED,
+  TYPE_VOID,
+  TYPE_BOOL,
+  TYPE_INT,
+  TYPE_BYTE,
+  TYPE_STRING,
+  TYPE_B,
   HELP_TYPE_NUM_TO_STRING
   */
 
 string type_to_string_map[HELP_TYPE_NUM_TO_STRING] = {
-    "B",
-    "BOOL",
-    "BYTE",
-    "INT",
+    "",
     "VOID",
-    "STRING"
-    "", // TYPE_UNDEFINED,
+    "BOOL",
+    "INT",
+    "BYTE",
+    "STRING",
+    "B",
 };
+
+bool converstion_map[HELP_TYPE_NUM_TO_STRING][HELP_TYPE_NUM_TO_STRING] = {
+    /* eTYPE_NONE to */ {
+        /* eTYPE_NONE */ true,
+        /* eTYPE_VOID */ false,
+        /* eTYPE_BOOL */ false,
+        /* eTYPE_INT */ false,
+        /* eTYPE_BYTE */ false,
+        /* eTYPE_STRING */ false,
+        /* TYPE_B */ false,
+
+    },
+    /* eTYPE_VOID to */ {
+        /* eTYPE_NONE */ false,
+        /* eTYPE_VOID */ true,
+        /* eTYPE_BOOL */ false,
+        /* eTYPE_INT */ false,
+        /* eTYPE_BYTE */ false,
+        /* eTYPE_STRING */ false,
+        /* TYPE_B */ false,
+    },
+    /* eTYPE_BOOL to */ {/* eTYPE_NONE */ false,
+                         /* eTYPE_VOID */ false,
+                         /* eTYPE_BOOL */ true,
+                         /* eTYPE_INT */ false,
+                         /* eTYPE_BYTE */ false,
+                         /* eTYPE_STRING */ false,
+                         /* TYPE_B */ false},
+    /* eTYPE_INT to */ {/* eTYPE_NONE */ false,
+                        /* eTYPE_VOID */ false,
+                        /* eTYPE_BOOL */ false,
+                        /* eTYPE_INT */ true,
+                        /* eTYPE_BYTE */ false,
+                        /* eTYPE_STRING */ false},
+    /* eTYPE_BYTE to */ {/* eTYPE_NONE */ false,
+                         /* eTYPE_VOID */ false,
+                         /* eTYPE_BOOL */ false,
+                         /* eTYPE_INT */ true,
+                         /* eTYPE_BYTE */ true,
+                         /* eTYPE_STRING */ false,
+                         /* TYPE_B */ false},
+    /* eTYPE_STRING to */ {/* eTYPE_NONE */ false,
+                           /* eTYPE_VOID */ false,
+                           /* eTYPE_BOOL */ false,
+                           /* eTYPE_INT */ false,
+                           /* eTYPE_BYTE */ false,
+                           /* eTYPE_STRING */ true,
+                           /* TYPE_B */ false},
+    /* eTYPE_B to */ {/* eTYPE_NONE */ false,
+                      /* eTYPE_VOID */ false,
+                      /* eTYPE_BOOL */ false,
+                      /* eTYPE_INT */ false,
+                      /* eTYPE_BYTE */ false,
+                      /* eTYPE_STRING */ true,
+                      /* TYPE_B */ true}};
 
 void init_program()
 {
@@ -96,4 +151,13 @@ void close_program()
     error_handle(output::errorMainMissing);
   }
   close_scope(false);
+}
+
+void return_value(TypeEnum return_type)
+{
+  bool validConversion = converstion_map[return_type][semantic_table.get_current_function_type()];
+  if (!validConversion)
+  {
+    error_handle(output::errorMismatch, yylineno);
+  }
 }

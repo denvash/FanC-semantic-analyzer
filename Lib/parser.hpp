@@ -35,5 +35,8 @@ struct yystype
 
 void init_program();
 void close_program();
+void return_value(TypeEnum return_type);
+void close_scope(bool is_function_scope);
+void declare_function(yystype y_identifier, yystype y_arguments);
 
 #endif /* PARSER_HPP */

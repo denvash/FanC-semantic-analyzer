@@ -173,6 +173,11 @@ public:
     return tables.top()->table;
   }
 
+  TypeEnum get_current_function_type()
+  {
+    return this->func_info.type;
+  }
+
   ~SemanticTable(){};
 };
 

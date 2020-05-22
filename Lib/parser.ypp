@@ -1,14 +1,17 @@
 %{
     #include "output.hpp"
     #include "parser.hpp"
+    #include "types.hpp"
+    #include <string>
     #include <iostream>
 
     /* For debugging */
     extern char* yytext;
     extern int yylex();
     extern int yylineno;
+
     using namespace std;
-    void printRule(char const*);
+    void debugPrint(char const*);
     void yyerror(char const*);
 %}
 
@@ -29,54 +32,67 @@
 
 %nonassoc NOELSE
 %nonassoc ELSE
+
 %%
 
 Program :
-    Funcs                           {
-      init_program();
-    }
-;
+    Funcs                           { init_program(); }
+    ;
 
 Funcs :
     %empty                          {}
     |   FuncDecl Funcs              {}
-;
+    ;
 
 FuncDecl:
-    RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE {}
-;
+    RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE {
+                                                                $2.e_type = $1.e_type;
+                                                                declare_function($2,$4);
+                                                              }
+    ;
 
 RetType:
-    Type                            {}
-    |   VOID                        {}
-;
+    Type                            { $$ = $1; }
+    |   VOID                        { debugPrint("RetType VOID"); $$.e_type = TYPE_VOID; }
+    ;
 
 Formals:
-    %empty                          {}
-    | FormalsList                   {}
-;
+    %empty                          { $$.node = NULL; }
+    | FormalsList                   { $$ = $1; }
+    ;
 
 FormalsList:
     FormalDecl                      {}
     | FormalDecl COMMA FormalsList  {}
-;
+    ;
 
 FormalDecl:
-    Type ID                         {}
-;
+    Type ID                         { $$.e_type = $1.e_type; $$.str_value = $2.str_value; }
+    ;
 
 Statements:
     Statement                       {}
     | Statements Statement          {}
-;
+    ;
+
+OpenScope:
+    %empty                          { semantic_table.open_scope(); }
+    ;
+
+CloseScope:
+    %empty                          { close_scope(false); }
+    ;
 
 Statement:
-    LBRACE Statements RBRACE                                    {}
+    OpenScope LBRACE Statements RBRACE CloseScope               { $$ = $3; }
     | Type ID SC                                                {}
     | Type ID ASSIGN Exp SC                                     {}
     | ID ASSIGN Exp SC                                          {}
     | Call SC                                                   {}
-    | RETURN SC                                                 {}
+    | RETURN SC                                                 {
+                                                                  debugPrint("Statement RETURN SC");
+                                                                  return_value(TYPE_VOID);
+                                                                }
     | RETURN Exp SC                                             {}
     | IF LPAREN Exp RPAREN Statement %prec NOELSE               {}
     | IF LPAREN Exp RPAREN Statement ELSE Statement %prec ELSE  {}
@@ -97,9 +113,9 @@ ExpList:
 ;
 
 Type:
-    INT                             {}
-    |   BYTE                        {}
-    |   BOOL                        {}
+    INT                             { $$.e_type = TYPE_INT; }
+    |   BYTE                        { $$.e_type = TYPE_BYTE; }
+    |   BOOL                        { $$.e_type = TYPE_BOOL; }
 ;
 
 Exp:
@@ -135,6 +151,6 @@ void yyerror(char const* s) {
     exit(1);
 }
 
-void printRule(char const* rule){
-    cout << "rule " << rule << endl;
+void debugPrint(char const* rule){
+    cout << "[debug] " << rule << endl;
 }
