@@ -36,19 +36,26 @@
 %%
 
 Program :
-    Funcs                           { init_program(); }
+                                    { debugPrint("Init program"); init_program(); }
+    Funcs                           { debugPrint("Program Funcs"); }
     ;
 
 Funcs :
     %empty                          {}
-    |   FuncDecl Funcs              {}
+    |   FuncDecl Funcs              {
+                                      debugPrint("FuncDecl Funcs");
+                                    }
     ;
 
 FuncDecl:
-    RetType ID LPAREN Formals RPAREN LBRACE Statements RBRACE {
-                                                                $2.e_type = $1.e_type;
-                                                                declare_function($2,$4);
-                                                              }
+    RetType ID LPAREN Formals RPAREN {
+                                       debugPrint("FuncDecl RetType ID LPAREN Formals RPAREN OpenScope LBRACE Statements RBRACE CloseScope");
+                                       $2.e_type = $1.e_type;
+                                       declare_function($2,$4);
+                                       declare_formals($4);
+                                     }
+    OpenScope LBRACE Statements RBRACE CloseScope
+
     ;
 
 RetType:
@@ -57,8 +64,14 @@ RetType:
     ;
 
 Formals:
-    %empty                          { $$.node = NULL; }
-    | FormalsList                   { $$ = $1; }
+    %empty                          {
+                                      debugPrint("Formals Epsilon");
+                                      $$.node = NULL;
+                                    }
+    | FormalsList                   {
+                                      debugPrint("Formals FormalsList");
+                                      $$ = $1;
+                                    }
     ;
 
 FormalsList:
@@ -71,27 +84,30 @@ FormalDecl:
     ;
 
 Statements:
-    Statement                       {}
-    | Statements Statement          {}
+    Statement                       { debugPrint("Statements Statement"); }
+    | Statements Statement          { debugPrint("Statements Statements Statement"); }
     ;
 
 OpenScope:
-    %empty                          { semantic_table.open_scope(); }
+    %empty                          { debugPrint("OpenScope"); semantic_table.open_scope(); }
     ;
 
 CloseScope:
-    %empty                          { close_scope(false); }
+    %empty                          { debugPrint("CloseScope"); close_scope(false); }
     ;
 
 Statement:
-    OpenScope LBRACE Statements RBRACE CloseScope               { $$ = $3; }
+    OpenScope LBRACE Statements RBRACE CloseScope               {
+                                                                  debugPrint("Statement OpenScope LBRACE Statements RBRACE CloseScope");
+                                                                  $$ = $3;
+                                                                }
     | Type ID SC                                                {}
     | Type ID ASSIGN Exp SC                                     {}
     | ID ASSIGN Exp SC                                          {}
     | Call SC                                                   {}
     | RETURN SC                                                 {
                                                                   debugPrint("Statement RETURN SC");
-                                                                  return_value(TYPE_VOID);
+                                                                  return_value_check(TYPE_VOID);
                                                                 }
     | RETURN Exp SC                                             {}
     | IF LPAREN Exp RPAREN Statement %prec NOELSE               {}
@@ -152,5 +168,5 @@ void yyerror(char const* s) {
 }
 
 void debugPrint(char const* rule){
-    cout << "[debug] " << rule << endl;
+    debug("semantic rule", rule);
 }

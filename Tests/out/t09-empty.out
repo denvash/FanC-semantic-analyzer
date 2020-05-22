@@ -1,2 +1,20 @@
-[debug] RetType VOID
-line 2: type mismatch
+[semantic rule] Init program
+[parser] init table
+[table] After init table
+[table] open scope
+[semantic rule] RetType VOID
+[semantic rule] Formals Epsilon
+[semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN OpenScope LBRACE Statements RBRACE CloseScope
+[parser] declaring function
+[table] open scope
+[semantic rule] OpenScope
+[table] open scope
+[semantic rule] Statement RETURN SC
+[parser] return value check
+[semantic rule] Statements Statement
+[semantic rule] CloseScope
+---end scope---
+[semantic rule] FuncDecl Funcs
+[semantic rule] Program Funcs
+[parser] close program
+Program has no 'void main()' function

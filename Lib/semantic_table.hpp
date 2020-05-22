@@ -44,6 +44,16 @@ typedef struct table_t
   }
 } table_t;
 
+inline void debug(char const *target, char const *text)
+{
+  cout << "[" << target << "] " << text << endl;
+}
+
+inline void debugTable(char const *text)
+{
+  debug("table", text);
+}
+
 class SemanticTable
 {
 private:
@@ -51,20 +61,22 @@ private:
 
 public:
   stack<int> offsets;
-  vector<table_entry_t *> scopes;
+  vector<table_entry_t *> func_scopes;
   type_info_t func_info;
 
   void init_table()
   {
-    auto table = new table_t();
-    table->parent = NULL;
-    scopes = vector<table_entry_t *>();
-    tables.push(table);
+    auto firstTable = new table_t();
+    firstTable->parent = NULL;
+    func_scopes = vector<table_entry_t *>();
+    tables.push(firstTable);
     offsets.push(0);
+    debugTable("After init table");
   }
 
   void close_scope()
   {
+    table_t *tmp = tables.top();
     tables.pop();
     offsets.pop();
   }
@@ -72,9 +84,28 @@ public:
   void open_scope()
   {
     auto table = new table_t();
+    table->parent;
     table->parent = tables.top();
     tables.push(table);
     offsets.push(offsets.top());
+    debugTable("open scope");
+  }
+
+  bool exists(string name)
+  {
+    bool found = false;
+    for (table_t *currentTable = tables.top();
+         currentTable->parent;
+         currentTable = currentTable->parent)
+    {
+      vector<table_entry_t *>::iterator search = currentTable->find(name);
+      if (search != currentTable->table.end())
+      {
+        found = true;
+        break;
+      }
+    }
+    return found;
   }
 
   void insert(string name, type_info_t *type, bool is_local)
@@ -97,7 +128,7 @@ public:
     if (entry->type_info.is_func)
     {
       entry->offset = 0;
-      scopes.push_back(entry);
+      func_scopes.push_back(entry);
     }
     tables.top()->table.push_back(entry);
   }
@@ -122,7 +153,7 @@ public:
     }
     if (entry->name == "")
     {
-      for (vector<table_entry_t *>::iterator i = scopes.begin(); i != scopes.end(); i++)
+      for (vector<table_entry_t *>::iterator i = func_scopes.begin(); i != func_scopes.end(); i++)
       {
         auto possibleMain = *i;
         if (possibleMain->name == name)
@@ -147,10 +178,13 @@ public:
   /* return [TYPE_UNDEFINED] if not exists */
   vector<TypeEnum> get_function_args(const string &identifier)
   {
+    debugTable("Getting functions args");
     if (!this->is_func_exists(identifier))
     {
+      debugTable("Func not exists");
       return vector<TypeEnum>(1, TYPE_UNDEFINED);
     }
+    cout << this->get_table_entry(identifier).type_info.type << endl;
     return this->get_table_entry(identifier).type_info.arg_types;
   }
 
@@ -165,7 +199,7 @@ public:
 
   table_entry_t *get_last_function_in_scope()
   {
-    return scopes.back();
+    return func_scopes.back();
   }
 
   vector<table_entry_t *> get_current_inner_scope()

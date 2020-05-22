@@ -35,8 +35,26 @@ struct yystype
 
 void init_program();
 void close_program();
-void return_value(TypeEnum return_type);
+void return_value_check(TypeEnum return_type);
 void close_scope(bool is_function_scope);
 void declare_function(yystype y_identifier, yystype y_arguments);
+void declare_formals(yystype yy_formals);
+
+class FormalsList : public Node
+{
+public:
+  vector<yystype> list;
+  FormalsList(yystype yy_formal)
+  {
+    this->list.push_back(yy_formal);
+  }
+
+  FormalsList(yystype yy_formals_list, yystype additional)
+  {
+    FormalsList *formals_list = dynamic_cast<FormalsList *>(yy_formals_list.node);
+    this->list.insert(this->list.begin(), formals_list->list.begin(), formals_list->list.end());
+    this->list.push_back(additional);
+  }
+};
 
 #endif /* PARSER_HPP */

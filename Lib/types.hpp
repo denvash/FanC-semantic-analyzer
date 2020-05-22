@@ -10,7 +10,7 @@ typedef enum
   TYPE_BYTE,
   TYPE_STRING,
   TYPE_B,
-  HELP_TYPE_NUM_TO_STRING
+  HELP_TYPE_NUM
 } TypeEnum;
 
 #endif /* TYPES_HPP */
