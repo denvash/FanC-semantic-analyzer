@@ -129,6 +129,7 @@ void close_scope(bool is_function_scope)
     TypeEnum type = entries[i]->type_info.type;
     string type_str = type_to_string_map[type];
     string id = entries[i]->name;
+    cout << id << endl;
     int offset = entries[i]->offset;
 
     if (entries[i]->type_info.is_func)
@@ -211,7 +212,8 @@ void declare_function(yystype y_identifier, yystype y_arguments)
   func.size = 0;
   semantic_table.insert(*y_identifier.str_value, &func, true);
 
-  semantic_table.open_scope();
+  /* Open scope with rule */
+  // semantic_table.open_scope();
   semantic_table.func_info = func;
 }
 

@@ -2,12 +2,17 @@
 [parser] init table
 [table] After init table
 [table] open scope
+[table] insert table entry
+print
+[table] insert table entry
+printi
 [semantic rule] RetType VOID
 [semantic rule] Formals Epsilon
 [semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
 [parser] declaring function
 [parser] In declaring function, no arguments
-[table] open scope
+[table] insert table entry
+main
 [semantic rule] OpenScope
 [table] open scope
 [semantic rule] Statement RETURN SC
@@ -22,3 +27,9 @@
 [table] Getting functions args
 [parser] closing scope
 ---end scope---
+print
+print (STRING)->VOID 0
+printi
+printi (STRING,INT)->VOID 0
+main
+main ()->VOID 0

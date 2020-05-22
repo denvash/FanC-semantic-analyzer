@@ -84,7 +84,6 @@ public:
   void open_scope()
   {
     auto table = new table_t();
-    table->parent;
     table->parent = tables.top();
     tables.push(table);
     offsets.push(offsets.top());
@@ -108,8 +107,15 @@ public:
     return found;
   }
 
+  vector<table_entry_t *> get_current_inner_scope()
+  {
+    return tables.top()->table;
+  }
+
   void insert(string name, type_info_t *type, bool is_local)
   {
+    debugTable("insert table entry");
+    cout << name << endl;
     int offset = offsets.top();
     if (is_local)
     {
@@ -199,11 +205,6 @@ public:
   table_entry_t *get_last_function_in_scope()
   {
     return func_scopes.back();
-  }
-
-  vector<table_entry_t *> get_current_inner_scope()
-  {
-    return tables.top()->table;
   }
 
   TypeEnum get_current_function_type()
