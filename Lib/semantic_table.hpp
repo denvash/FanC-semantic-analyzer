@@ -114,8 +114,7 @@ public:
 
   void insert(string name, type_info_t *type, bool is_local)
   {
-    debugTable("insert table entry");
-    cout << name << endl;
+    // debugTable("insert table entry");
     int offset = offsets.top();
     if (is_local)
     {

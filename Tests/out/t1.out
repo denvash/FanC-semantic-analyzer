@@ -1,3 +1,40 @@
-[debug] RetType VOID
-[debug] RetType VOID
-Program has no 'void main()' function
+[semantic rule] Init program
+[parser] init table
+[table] After init table
+[table] open scope
+[semantic rule] RetType VOID
+[semantic rule] Formals FormalsList
+[semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
+[parser] declaring function
+[parser] In declaring function, no arguments
+[semantic rule] OpenScope
+[table] open scope
+[semantic rule] Statements Statement
+[semantic rule] CloseScope
+[parser] closing scope
+---end scope---
+[semantic rule] RetType VOID
+[semantic rule] Formals Epsilon
+[semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
+[parser] declaring function
+[parser] In declaring function, no arguments
+[semantic rule] OpenScope
+[table] open scope
+[semantic rule] Statements Statement
+[semantic rule] Statements Statements Statement
+[semantic rule] Statements Statements Statement
+[semantic rule] Statements Statements Statement
+[semantic rule] CloseScope
+[parser] closing scope
+---end scope---
+[semantic rule] FuncDecl Funcs
+[semantic rule] FuncDecl Funcs
+[semantic rule] Program Funcs
+[parser] close program
+[table] Getting functions args
+[parser] closing scope
+---end scope---
+print (STRING)->VOID 0
+printi (STRING,INT)->VOID 0
+printOk ()->VOID 0
+main ()->VOID 0

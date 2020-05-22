@@ -1,3 +1,14 @@
-[debug] RetType VOID
+[semantic rule] Init program
+[parser] init table
+[table] After init table
+[table] open scope
+[semantic rule] RetType VOID
+[semantic rule] Formals Epsilon
+[semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
+[parser] declaring function
+[parser] In declaring function, no arguments
+[semantic rule] OpenScope
+[table] open scope
+[semantic rule] Statements Statement
 line 4: syntax error
 syntax error from token: 3

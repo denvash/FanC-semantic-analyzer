@@ -36,7 +36,7 @@ struct yystype
 void init_program();
 void close_program();
 void return_value_check(TypeEnum return_type);
-void close_scope(bool is_function_scope);
+void close_scope();
 void declare_function(yystype y_identifier, yystype y_arguments);
 void declare_formals(yystype yy_formals);
 

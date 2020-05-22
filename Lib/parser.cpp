@@ -119,7 +119,7 @@ void init_program()
   semantic_table.insert("printi", &printi_func, true);
 }
 
-void close_scope(bool is_function_scope)
+void close_scope()
 {
   debugParser("closing scope");
   output::endScope();
@@ -129,7 +129,6 @@ void close_scope(bool is_function_scope)
     TypeEnum type = entries[i]->type_info.type;
     string type_str = type_to_string_map[type];
     string id = entries[i]->name;
-    cout << id << endl;
     int offset = entries[i]->offset;
 
     if (entries[i]->type_info.is_func)
@@ -171,7 +170,7 @@ void close_program()
     debugParser("wrong type");
     error_handle(output::errorMainMissing);
   }
-  close_scope(false);
+  close_scope();
 }
 
 void return_value_check(TypeEnum return_type)

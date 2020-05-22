@@ -93,7 +93,7 @@ OpenScope:
     ;
 
 CloseScope:
-    %empty                          { debugPrint("CloseScope"); close_scope(false); }
+    %empty                          { debugPrint("CloseScope"); close_scope(); }
     ;
 
 Statement:
