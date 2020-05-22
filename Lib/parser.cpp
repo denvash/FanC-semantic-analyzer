@@ -112,7 +112,6 @@ void init_program()
   */
   type_info_t print_func = {true, 0, TYPE_VOID, func_args};
 
-  func_args.pop_back();
   semantic_table.insert("print", &print_func, true);
 
   func_args.push_back(TYPE_INT);
