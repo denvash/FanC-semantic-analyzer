@@ -95,7 +95,7 @@ inline void debugParser(const char *text)
 
 void init_program()
 {
-  debugParser("init table");
+  // debugParser("init table");
   semantic_table.init_table();
   semantic_table.open_scope();
 
@@ -110,18 +110,18 @@ void init_program()
     TypeEnum type;
     vector<TypeEnum> arg_types;
   */
-  type_info_t print_func = {true, 0, TYPE_VOID, func_args};
+  var_info_t print_func = {true, 0, TYPE_VOID, func_args};
 
   semantic_table.insert("print", &print_func, true);
 
   func_args.push_back(TYPE_INT);
-  type_info_t printi_func = {true, 0, TYPE_VOID, func_args};
+  var_info_t printi_func = {true, 0, TYPE_VOID, func_args};
   semantic_table.insert("printi", &printi_func, true);
 }
 
 void close_scope()
 {
-  debugParser("closing scope");
+  // debugParser("closing scope");
   output::endScope();
   auto entries = semantic_table.get_current_inner_scope();
   for (int i = 0; i < entries.size(); i++)
@@ -191,7 +191,7 @@ void declare_function(yystype y_identifier, yystype y_arguments)
   {
     error_handle(output::errorDef, yylineno, *y_identifier.str_value);
   }
-  type_info_t func;
+  var_info_t func;
   func.is_func = true;
   func.type = y_identifier.e_type;
 
@@ -215,20 +215,6 @@ void declare_function(yystype y_identifier, yystype y_arguments)
   /* Open scope with rule */
   // semantic_table.open_scope();
   semantic_table.func_info = func;
-}
-
-void declare_var(yystype y_identifier, bool isLocal)
-{
-
-  if (semantic_table.exists(*y_identifier.str_value))
-  {
-    error_handle(output::errorDef, yylineno, *y_identifier.str_value);
-  }
-  type_info_t var;
-  var.is_func = false;
-  var.type = y_identifier.e_type;
-  var.size = type_size_map[y_identifier.e_type];
-  semantic_table.insert(*y_identifier.str_value, &var, isLocal);
 }
 
 void declare_formals(yystype yy_formals)
@@ -362,4 +348,95 @@ Exp::Exp(yystype a, string op, yystype b)
   {
     error_handle(output::errorMismatch, yylineno);
   }
+}
+
+Call::Call(yystype identifier, yystype yy_exp_list)
+{
+  if (!semantic_table.is_func_exists(*identifier.str_value))
+  {
+    error_handle(output::errorUndefFunc, yylineno, *identifier.str_value);
+  }
+  auto exp_list = dynamic_cast<ExpList *>(yy_exp_list.node);
+  vector<yystype> exp_type_list = exp_list->list;
+  vector<TypeEnum> args_type = semantic_table.get_function_args(*identifier.str_value);
+
+  if (args_type.size() != exp_type_list.size())
+  {
+    vector<string> args;
+    for (int j = 0; j < args_type.size(); j++)
+    {
+      args.push_back(type_to_string_map[args_type[j]]);
+      args.front() = args.front() == "VOID" ? "" : args.front();
+    }
+    error_handle(output::errorPrototypeMismatch, yylineno, *identifier.str_value, args);
+  }
+  for (int i = 0; i < args_type.size(); i++)
+  {
+    bool is_valid = converstion_map[exp_type_list[i].e_type][args_type[i]];
+    if (!is_valid)
+    {
+      vector<string> args;
+      for (int j = 0; j < args_type.size(); j++)
+      {
+        args.push_back(type_to_string_map[args_type[j]]);
+      }
+      error_handle(output::errorPrototypeMismatch, yylineno, *identifier.str_value, args);
+    }
+  }
+  this->type = semantic_table.get_function_type(*identifier.str_value);
+}
+
+Call::Call(yystype identifier)
+{
+  if (!semantic_table.is_func_exists(*identifier.str_value))
+  {
+    error_handle(output::errorUndefFunc, yylineno, *identifier.str_value);
+  }
+  vector<TypeEnum> args_type = semantic_table.get_function_args(*identifier.str_value);
+  if (args_type.size() != 1 || args_type.front() != TYPE_VOID)
+  {
+    vector<string> args;
+    for (int j = 0; j < args_type.size(); j++)
+    {
+      args.push_back(type_to_string_map[args_type[j]]);
+      args.front() = args.front() == "VOID" ? "" : args.front();
+    }
+
+    error_handle(output::errorPrototypeMismatch, yylineno, *identifier.str_value, args);
+  }
+  this->type = semantic_table.get_function_type(*identifier.str_value);
+}
+
+void assign_value(yystype y_identifier, yystype y_expression)
+{
+  if (!semantic_table.exists(*y_identifier.str_value))
+  {
+    error_handle(output::errorUndef, yylineno, *y_identifier.str_value);
+  }
+  auto entry = semantic_table.get_entry(*y_identifier.str_value);
+  if (entry.type_info.is_func)
+  {
+    error_handle(output::errorUndef, yylineno, *y_identifier.str_value);
+  }
+  bool is_valid = converstion_map[y_expression.e_type][entry.type_info.type];
+  if (!is_valid)
+  {
+    error_handle(output::errorMismatch, yylineno);
+  }
+}
+
+void declare_var(yystype y_identifier, bool isLocal)
+{
+
+  if (semantic_table.exists(*y_identifier.str_value))
+  {
+    error_handle(output::errorDef, yylineno, *y_identifier.str_value);
+  }
+  debugParser("Declaring var");
+  cout << "[parser:var]: " << y_identifier.e_type << endl;
+  var_info_t var;
+  var.is_func = false;
+  var.type = y_identifier.e_type;
+  var.size = type_size_map[y_identifier.e_type];
+  semantic_table.insert(*y_identifier.str_value, &var, isLocal);
 }

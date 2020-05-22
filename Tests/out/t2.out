@@ -1,16 +1,14 @@
 [semantic rule] Init program
-[parser] init table
-[table] open scope
 [semantic rule] Formals Epsilon
 [semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
 [parser] declaring function
 [parser:function] return6
 [parser] In declaring function, no arguments
 [semantic rule] OpenScope
-[table] open scope
+[semantic rule] Statement RETURN Exp SC
+[parser] return value check
 [semantic rule] Statements Statement
 [semantic rule] CloseScope
-[parser] closing scope
 ---end scope---
 [semantic rule] RetType VOID
 [semantic rule] Formals Epsilon
@@ -19,7 +17,16 @@
 [parser:function] main
 [parser] In declaring function, no arguments
 [semantic rule] OpenScope
-[table] open scope
-[semantic rule] Type BOOL
+[semantic rule] Statement Type ID ASSIGN Exp SC
+[parser] Declaring var
+[parser:var]: 2
 [semantic rule] Statements Statement
-line 7: variable c is not defined
+[semantic rule] Exp ID
+[semantic rule] Statement Type ID ASSIGN Exp SC
+[parser] Declaring var
+[parser:var]: 3
+[semantic rule] Statements Statement
+[semantic rule] Exp ID
+[semantic rule] Call ID LPAREN ExpList RPAREN
+[table] Getting functions args
+line 9: prototype mismatch, function printi expects arguments (STRING,INT)

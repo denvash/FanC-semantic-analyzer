@@ -1,6 +1,4 @@
 [semantic rule] Init program
-[parser] init table
-[table] open scope
 [semantic rule] RetType VOID
 [semantic rule] Formals Epsilon
 [semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
@@ -8,18 +6,15 @@
 [parser:function] main
 [parser] In declaring function, no arguments
 [semantic rule] OpenScope
-[table] open scope
 [semantic rule] Statement RETURN SC
 [parser] return value check
 [semantic rule] Statements Statement
 [semantic rule] CloseScope
-[parser] closing scope
 ---end scope---
 [semantic rule] FuncDecl Funcs
 [semantic rule] Program Funcs
 [parser] close program
 [table] Getting functions args
-[parser] closing scope
 ---end scope---
 print (STRING)->VOID 0
 printi (STRING,INT)->VOID 0

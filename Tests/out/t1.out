@@ -1,19 +1,19 @@
 [semantic rule] Init program
-[parser] init table
-[table] open scope
 [semantic rule] RetType VOID
-[semantic rule] Type BOOL
 [semantic rule] FormalDecl Type ID
 [semantic rule] FormalsList FormalDecl
 [semantic rule] Formals FormalsList
 [semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
 [parser] declaring function
 [parser:function] printOk
+[parser] Declaring var
+[parser:var]: 2
 [semantic rule] OpenScope
-[table] open scope
+[semantic rule] Exp ID
+[semantic rule] Call ID LPAREN ExpList RPAREN
+[table] Getting functions args
 [semantic rule] Statements Statement
 [semantic rule] CloseScope
-[parser] closing scope
 ---end scope---
 [semantic rule] RetType VOID
 [semantic rule] Formals Epsilon
@@ -22,7 +22,37 @@
 [parser:function] main
 [parser] In declaring function, no arguments
 [semantic rule] OpenScope
-[table] open scope
+[semantic rule] Statement Type ID ASSIGN Exp SC
+[parser] Declaring var
+[parser:var]: 3
 [semantic rule] Statements Statement
+[semantic rule] Statement Type ID ASSIGN Exp SC
+[parser] Declaring var
+[parser:var]: 4
 [semantic rule] Statements Statements Statement
-line 9: variable x is not defined
+[semantic rule] Exp ID
+[semantic rule] Exp ID
+[semantic rule] Exp Exp RELOP Exp
+[semantic rule] Call ID LPAREN ExpList RPAREN
+[table] Getting functions args
+[semantic rule] Statements Statements Statement
+[semantic rule] Statement Type ID SC
+[parser] Declaring var
+[parser:var]: 3
+[semantic rule] Statements Statements Statement
+[semantic rule] CloseScope
+---end scope---
+x INT 0
+y BYTE 1
+z INT 2
+[semantic rule] FuncDecl Funcs
+[semantic rule] FuncDecl Funcs
+[semantic rule] Program Funcs
+[parser] close program
+[table] Getting functions args
+---end scope---
+print (STRING)->VOID 0
+printi (STRING,INT)->VOID 0
+printOk (BOOL)->VOID 0
+isOk BOOL -1
+main ()->VOID 0

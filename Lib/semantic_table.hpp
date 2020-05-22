@@ -18,13 +18,13 @@ typedef struct
   int size;
   TypeEnum type;
   vector<TypeEnum> arg_types;
-} type_info_t;
+} var_info_t;
 
 typedef struct
 {
   int offset;
   string name;
-  type_info_t type_info;
+  var_info_t type_info;
 } table_entry_t;
 
 typedef struct table_t
@@ -62,7 +62,7 @@ private:
 public:
   stack<int> offsets;
   vector<table_entry_t *> func_scopes;
-  type_info_t func_info;
+  var_info_t func_info;
 
   void init_table()
   {
@@ -86,7 +86,7 @@ public:
     table->parent = tables.top();
     tables.push(table);
     offsets.push(offsets.top());
-    debugTable("open scope");
+    // debugTable("open scope");
   }
 
   bool exists(string name)
@@ -111,7 +111,7 @@ public:
     return tables.top()->table;
   }
 
-  void insert(string name, type_info_t *type, bool is_local)
+  void insert(string name, var_info_t *type, bool is_local)
   {
     // debugTable("insert table entry");
     int offset = offsets.top();

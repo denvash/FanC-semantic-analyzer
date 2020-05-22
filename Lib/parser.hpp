@@ -39,6 +39,8 @@ void return_value_check(TypeEnum return_type);
 void close_scope();
 void declare_function(yystype y_identifier, yystype y_arguments);
 void declare_formals(yystype yy_formals);
+void assign_value(yystype y_identifier, yystype y_expression);
+void declare_var(yystype y_identifier, bool isLocal);
 
 class Exp : public Node
 {
@@ -79,9 +81,61 @@ public:
 
   FormalsList(yystype yy_formals_list, yystype additional)
   {
-    FormalsList *formals_list = dynamic_cast<FormalsList *>(yy_formals_list.node);
+    auto formals_list = dynamic_cast<FormalsList *>(yy_formals_list.node);
     this->list.insert(this->list.begin(), formals_list->list.begin(), formals_list->list.end());
     this->list.push_back(additional);
+  }
+};
+
+class IfExp : public Node
+{
+public:
+  IfExp(yystype yy_exp)
+  {
+    if (yy_exp.e_type != TYPE_BOOL)
+    {
+      error_handle(output::errorMismatch, yylineno);
+    }
+  }
+};
+
+class Call : public Node
+{
+public:
+  TypeEnum type;
+  int value;
+
+  Call(yystype identifier);
+
+  Call(yystype identifier, yystype yy_exp_list); /* in .cpp */
+
+  virtual TypeEnum get_type()
+  {
+    return this->type;
+  }
+};
+
+class ExpList : public Node
+{
+public:
+  vector<yystype> list;
+  ExpList(yystype exp)
+  {
+    list.push_back(exp);
+  }
+  ExpList(yystype exp_list_yy, yystype yy_exp_added)
+  {
+    ExpList *exp_list = dynamic_cast<ExpList *>(exp_list_yy.node);
+    this->list.insert(this->list.begin(), exp_list->list.begin(), exp_list->list.end());
+    this->list.push_back(yy_exp_added);
+  }
+  virtual int get_value()
+  {
+    return list.front().i_value;
+  }
+  virtual TypeEnum get_type()
+  {
+    return list.front().e_type;
   }
 };
 
