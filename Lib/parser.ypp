@@ -38,9 +38,9 @@
 
 Program :
                                     {
-                                      debugPrint("Init program");
-                                      init_program();
-                                    }
+      debugPrint("Init program");
+      init_program();
+    }
     Funcs                           {
       debugPrint("Program Funcs");
     };
@@ -61,14 +61,19 @@ FuncDecl:
     OpenScope LBRACE Statements RBRACE CloseScope;
 
 RetType:
-    Type                            { $$ = $1; }
-    |   VOID                        { debugPrint("RetType VOID"); $$.e_type = TYPE_VOID; };
+    Type                            {
+      $$ = $1;
+    }
+    |   VOID                        {
+      debugPrint("RetType VOID");
+      $$.e_type = TYPE_VOID;
+    };
 
 Formals:
     %empty                          {
-                                      debugPrint("Formals Epsilon");
-                                      $$.node = NULL;
-                                    }
+      debugPrint("Formals Epsilon");
+      $$.node = NULL;
+    }
     | FormalsList                   {
       debugPrint("Formals FormalsList");
       $$ = $1;
