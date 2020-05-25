@@ -121,15 +121,17 @@ void init_program()
 
 void close_scope()
 {
-  // debugParser("closing scope");
+  debugParser("[parser:close-scope] closing scope");
   output::endScope();
   auto entries = semantic_table.get_current_inner_scope();
   for (int i = 0; i < entries.size(); i++)
   {
-    TypeEnum type = entries[i]->type_info.type;
-    string type_str = type_to_string_map[type];
-    string id = entries[i]->name;
-    int offset = entries[i]->offset;
+    auto type = entries[i]->type_info.type;
+    auto type_str = type_to_string_map[type];
+    auto id = entries[i]->name;
+    auto offset = entries[i]->offset;
+
+    cout << "[parser:entry-id] " << id << endl;
 
     if (entries[i]->type_info.is_func)
     {
@@ -137,11 +139,11 @@ void close_scope()
       vector<string> func_args;
       for (int i = 0; i < function_entry->type_info.arg_types.size(); i++)
       {
-        string arg_str = type_to_string_map[function_entry->type_info.arg_types[i]];
+        auto arg_str = type_to_string_map[function_entry->type_info.arg_types[i]];
         arg_str = (arg_str == "VOID") ? "" : arg_str;
         func_args.push_back(arg_str);
       }
-      string function_return_type_str = type_to_string_map[function_entry->type_info.type];
+      auto function_return_type_str = type_to_string_map[function_entry->type_info.type];
       type_str = output::makeFunctionType(function_return_type_str, func_args);
       /* print special type */
     }
@@ -212,7 +214,6 @@ void declare_function(yystype y_identifier, yystype y_arguments)
   func.size = 0;
   semantic_table.insert(*y_identifier.str_value, &func, true);
 
-  /* Open scope with rule */
   // semantic_table.open_scope();
   semantic_table.func_info = func;
 }
@@ -433,7 +434,7 @@ void declare_var(yystype y_identifier, bool isLocal)
     error_handle(output::errorDef, yylineno, *y_identifier.str_value);
   }
   debugParser("Declaring var");
-  cout << "[parser:var]: " << y_identifier.e_type << endl;
+  cout << "[parser:var]: " << type_to_string_map[y_identifier.e_type] << endl;
   var_info_t var;
   var.is_func = false;
   var.type = y_identifier.e_type;

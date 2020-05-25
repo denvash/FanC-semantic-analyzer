@@ -7,28 +7,34 @@
 [parser] declaring function
 [parser:function] printOk
 [parser] Declaring var
-[parser:var]: 2
-[semantic rule] OpenScope
+[parser:var]: BOOL
 [semantic rule] Exp ID
+[semantic rule] IfExp IF LPAREN Exp RPAREN
 [semantic rule] Call ID LPAREN ExpList RPAREN
 [table] Getting functions args
+[semantic rule] CloseScope
+[parser] [parser:close-scope] closing scope
+---end scope---
+[semantic rule] Statement IfExp Statement %prec NOELSE CloseScope
 [semantic rule] Statements Statement
 [semantic rule] CloseScope
+[parser] [parser:close-scope] closing scope
 ---end scope---
+[parser:entry-id] isOk
+isOk BOOL -1
 [semantic rule] RetType VOID
 [semantic rule] Formals Epsilon
 [semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
 [parser] declaring function
 [parser:function] main
 [parser] In declaring function, no arguments
-[semantic rule] OpenScope
 [semantic rule] Statement Type ID ASSIGN Exp SC
 [parser] Declaring var
-[parser:var]: 3
+[parser:var]: INT
 [semantic rule] Statements Statement
 [semantic rule] Statement Type ID ASSIGN Exp SC
 [parser] Declaring var
-[parser:var]: 4
+[parser:var]: BYTE
 [semantic rule] Statements Statements Statement
 [semantic rule] Exp ID
 [semantic rule] Exp ID
@@ -38,21 +44,29 @@
 [semantic rule] Statements Statements Statement
 [semantic rule] Statement Type ID SC
 [parser] Declaring var
-[parser:var]: 3
+[parser:var]: INT
 [semantic rule] Statements Statements Statement
 [semantic rule] CloseScope
+[parser] [parser:close-scope] closing scope
 ---end scope---
+[parser:entry-id] x
 x INT 0
+[parser:entry-id] y
 y BYTE 1
+[parser:entry-id] z
 z INT 2
 [semantic rule] FuncDecl Funcs
 [semantic rule] FuncDecl Funcs
 [semantic rule] Program Funcs
 [parser] close program
 [table] Getting functions args
+[parser] [parser:close-scope] closing scope
 ---end scope---
+[parser:entry-id] print
 print (STRING)->VOID 0
+[parser:entry-id] printi
 printi (STRING,INT)->VOID 0
+[parser:entry-id] printOk
 printOk (BOOL)->VOID 0
-isOk BOOL -1
+[parser:entry-id] main
 main ()->VOID 0

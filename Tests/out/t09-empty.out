@@ -5,17 +5,21 @@
 [parser] declaring function
 [parser:function] main
 [parser] In declaring function, no arguments
-[semantic rule] OpenScope
 [semantic rule] Statement RETURN SC
 [parser] return value check
 [semantic rule] Statements Statement
 [semantic rule] CloseScope
+[parser] [parser:close-scope] closing scope
 ---end scope---
 [semantic rule] FuncDecl Funcs
 [semantic rule] Program Funcs
 [parser] close program
 [table] Getting functions args
+[parser] [parser:close-scope] closing scope
 ---end scope---
+[parser:entry-id] print
 print (STRING)->VOID 0
+[parser:entry-id] printi
 printi (STRING,INT)->VOID 0
+[parser:entry-id] main
 main ()->VOID 0

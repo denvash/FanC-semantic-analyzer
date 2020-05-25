@@ -4,11 +4,11 @@
 [parser] declaring function
 [parser:function] return6
 [parser] In declaring function, no arguments
-[semantic rule] OpenScope
 [semantic rule] Statement RETURN Exp SC
 [parser] return value check
 [semantic rule] Statements Statement
 [semantic rule] CloseScope
+[parser] [parser:close-scope] closing scope
 ---end scope---
 [semantic rule] RetType VOID
 [semantic rule] Formals Epsilon
@@ -16,15 +16,15 @@
 [parser] declaring function
 [parser:function] main
 [parser] In declaring function, no arguments
-[semantic rule] OpenScope
 [semantic rule] Statement Type ID ASSIGN Exp SC
 [parser] Declaring var
-[parser:var]: 2
+[parser:var]: BOOL
 [semantic rule] Statements Statement
 [semantic rule] Exp ID
+[semantic rule] IfExp IF LPAREN Exp RPAREN
 [semantic rule] Statement Type ID ASSIGN Exp SC
 [parser] Declaring var
-[parser:var]: 3
+[parser:var]: INT
 [semantic rule] Statements Statement
 [semantic rule] Exp ID
 [semantic rule] Call ID LPAREN ExpList RPAREN

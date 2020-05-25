@@ -56,9 +56,11 @@ FuncDecl:
       debugPrint("FuncDecl RetType ID LPAREN Formals RPAREN");
       $2.e_type = $1.e_type;
       declare_function($2,$4);
+      // Opens scope before declaring formals
+      semantic_table.open_scope();
       declare_formals($4);
     }
-    OpenScope LBRACE Statements RBRACE CloseScope;
+    LBRACE Statements RBRACE CloseScope;
 
 RetType:
     Type                            {
@@ -116,6 +118,13 @@ CloseScope:
       close_scope();
     };
 
+IfExp:
+    IF LPAREN Exp RPAREN            {
+      debugPrint("IfExp IF LPAREN Exp RPAREN");
+      $$.node = new IfExp($3);
+      semantic_table.open_scope();
+    };
+
 Statement:
     LBRACE Statements RBRACE                                    {
       debugPrint("Statement LBRACE Statements RBRACE");
@@ -145,8 +154,10 @@ Statement:
       debugPrint("Statement RETURN Exp SC");
       return_value_check($2.e_type);
     }
-    | IF LPAREN Exp RPAREN Statement %prec NOELSE
-    | IF LPAREN Exp RPAREN Statement ELSE Statement %prec ELSE  {}
+    | IfExp Statement %prec NOELSE CloseScope               {
+      debugPrint("Statement IfExp Statement %prec NOELSE CloseScope");
+    }
+    | IfExp Statement CloseScope ELSE Statement %prec ELSE  {}
     | WHILE LPAREN Exp RPAREN Statement %prec NOELSE            {}
     | WHILE LPAREN Exp RPAREN Statement ELSE Statement          {}
     | BREAK SC                                                  {}
@@ -183,7 +194,10 @@ Type:
     |   BOOL                        { $$.e_type = TYPE_BOOL; };
 
 Exp:
-    LPAREN Exp RPAREN               { $$ = $2; }
+    LPAREN Exp RPAREN               {
+      debugPrint("Exp LPAREN Exp RPAREN");
+      $$ = $2;
+    }
     | Exp PLUS_MINUS Exp            {
       debugPrint("Exp Exp PLUS_MINUS Exp");
       $$.node = new Exp($1, *$2.str_value, $3);

@@ -5,11 +5,11 @@
 [parser] declaring function
 [parser:function] main
 [parser] In declaring function, no arguments
-[semantic rule] OpenScope
 [semantic rule] Statement Type ID ASSIGN Exp SC
 [parser] Declaring var
-[parser:var]: 2
+[parser:var]: BOOL
 [semantic rule] Statements Statement
 [semantic rule] Exp ID
+[semantic rule] IfExp IF LPAREN Exp RPAREN
 line 4: syntax error
 syntax error from token: 3
