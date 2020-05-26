@@ -1,32 +1,5 @@
-[semantic rule] Init program
-[semantic rule] Formals Epsilon
-[semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
-[parser] declaring function
-[parser:function] return6
-[parser] In declaring function, no arguments
-[semantic rule] Statement RETURN Exp SC
-[parser] return value check
-[semantic rule] Statements Statement
-[semantic rule] CloseScope
-[parser] [parser:close-scope] closing scope
 ---end scope---
-[semantic rule] RetType VOID
-[semantic rule] Formals Epsilon
-[semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
-[parser] declaring function
-[parser:function] main
-[parser] In declaring function, no arguments
-[semantic rule] Statement Type ID ASSIGN Exp SC
-[parser] Declaring var
-[parser:var]: BOOL
-[semantic rule] Statements Statement
-[semantic rule] Exp ID
-[semantic rule] IfExp IF LPAREN Exp RPAREN
-[semantic rule] Statement Type ID ASSIGN Exp SC
-[parser] Declaring var
-[parser:var]: INT
-[semantic rule] Statements Statement
-[semantic rule] Exp ID
-[semantic rule] Call ID LPAREN ExpList RPAREN
-[table] Getting functions args
-line 9: prototype mismatch, function printi expects arguments (STRING,INT)
+---end scope---
+x INT 1
+---end scope---
+line 12: syntax error

@@ -37,25 +37,25 @@
 %%
 
 Program :
-                                    {
-      debugPrint("Init program");
+    /* Pre Rule Execution */ {
+      // debugPrint("Init program");
       init_program();
     }
     Funcs                           {
-      debugPrint("Program Funcs");
+      // debugPrint("Program Funcs");
     };
 
 Funcs :
     %empty                          {}
     |   FuncDecl Funcs              {
-      debugPrint("FuncDecl Funcs");
+      // debugPrint("FuncDecl Funcs");
     };
 
 FuncDecl:
     RetType ID LPAREN Formals RPAREN {
-      debugPrint("FuncDecl RetType ID LPAREN Formals RPAREN");
+      // debugPrint("FuncDecl RetType ID LPAREN Formals RPAREN");
       $2.e_type = $1.e_type;
-      declare_function($2,$4);
+      func_init($2,$4);
       // Opens scope before declaring formals
       semantic_table.open_scope();
       declare_formals($4);
@@ -64,98 +64,101 @@ FuncDecl:
 
 RetType:
     Type                            {
+      // debugPrint("RetType Type");
       $$ = $1;
     }
     |   VOID                        {
-      debugPrint("RetType VOID");
+      // debugPrint("RetType VOID");
       $$.e_type = TYPE_VOID;
     };
 
 Formals:
     %empty                          {
-      debugPrint("Formals Epsilon");
+      // debugPrint("Formals Epsilon");
       $$.node = NULL;
     }
     | FormalsList                   {
-      debugPrint("Formals FormalsList");
+      // debugPrint("Formals FormalsList");
       $$ = $1;
     };
 
 FormalsList:
     FormalDecl                      {
-      debugPrint("FormalsList FormalDecl");
+      // debugPrint("FormalsList FormalDecl");
       $$.node = new FormalsList($1);
     }
-    | FormalDecl COMMA FormalsList  {
-      debugPrint("FormalsList FormalDecl COMMA FormalsList");
+    /* Revert the list and the Declaration */
+    | FormalsList COMMA FormalDecl  {
+      // debugPrint("FormalsList FormalDecl COMMA FormalsList");
       $$.node = new FormalsList($1, $3);
     };
 
 FormalDecl:
     Type ID                         {
-      debugPrint("FormalDecl Type ID");
+      // debugPrint("FormalDecl Type ID");
       $$.e_type = $1.e_type;
       $$.str_value = $2.str_value;
     };
 
 Statements:
     Statement                       {
-      debugPrint("Statements Statement");
+      // debugPrint("Statements Statement");
     }
     | Statements Statement          {
-      debugPrint("Statements Statements Statement");
+      // debugPrint("Statements Statements Statement");
     };
 
 OpenScope:
     %empty                          {
-      debugPrint("OpenScope");
+      // debugPrint("OpenScope");
       semantic_table.open_scope();
     };
 
 CloseScope:
     %empty                          {
-      debugPrint("CloseScope");
+      // debugPrint("CloseScope");
       close_scope();
     };
 
 IfExp:
     IF LPAREN Exp RPAREN            {
-      debugPrint("IfExp IF LPAREN Exp RPAREN");
+      // debugPrint("IfExp IF LPAREN Exp RPAREN");
       $$.node = new IfExp($3);
       semantic_table.open_scope();
     };
 
 Statement:
-    LBRACE Statements RBRACE                                    {
-      debugPrint("Statement LBRACE Statements RBRACE");
+    /* For if () {}, two scopes should be opened */
+    OpenScope LBRACE Statements RBRACE CloseScope                                    {
+      // debugPrint("Statement LBRACE Statements RBRACE");
       $$ = $2;
     }
     | Type ID SC                                                {
-      debugPrint("Statement Type ID SC");
+      // debugPrint("Statement Type ID SC");
       $2.e_type = $1.e_type;
-      declare_var($2,true);
+      variable_init($2,true);
     }
     | Type ID ASSIGN Exp SC                                     {
-      debugPrint("Statement Type ID ASSIGN Exp SC");
+      // debugPrint("Statement Type ID ASSIGN Exp SC");
       $2.e_type = $1.e_type;
-      declare_var($2,true);
+      variable_init($2,true);
       assign_value($2,$4);
     }
     | ID ASSIGN Exp SC                                          {
-      debugPrint("Statement ID ASSIGN Exp SC");
+      // debugPrint("Statement ID ASSIGN Exp SC");
       assign_value($1,$3);
     }
     | Call SC                                                   {}
     | RETURN SC                                                 {
-      debugPrint("Statement RETURN SC");
+      // debugPrint("Statement RETURN SC");
       return_value_check(TYPE_VOID);
     }
     | RETURN Exp SC                                             {
-      debugPrint("Statement RETURN Exp SC");
+      // debugPrint("Statement RETURN Exp SC");
       return_value_check($2.e_type);
     }
     | IfExp Statement %prec NOELSE CloseScope               {
-      debugPrint("Statement IfExp Statement %prec NOELSE CloseScope");
+      // debugPrint("Statement IfExp Statement %prec NOELSE CloseScope");
     }
     | IfExp Statement CloseScope ELSE Statement %prec ELSE  {}
     | WHILE LPAREN Exp RPAREN Statement %prec NOELSE            {}
@@ -165,12 +168,12 @@ Statement:
 
 Call:
     ID LPAREN ExpList RPAREN        {
-      debugPrint("Call ID LPAREN ExpList RPAREN");
+      // debugPrint("Call ID LPAREN ExpList RPAREN");
       $$.node = new Call($1,$3);
       $$.e_type = $$.node->get_type();
     }
     |   ID LPAREN RPAREN            {
-      debugPrint("Call ID LPAREN RPAREN");
+      // debugPrint("Call ID LPAREN RPAREN");
       $$.node = new Call($1);
       $$.i_value = $$.node->get_value();
       $$.e_type = $$.node->get_type();
@@ -178,6 +181,7 @@ Call:
 
 ExpList:
     Exp                             {
+      // debugPrint("ExpList Exp");
       $$.node = new ExpList($1);
       $$.i_value = $$.node->get_value();
       $$.e_type = $$.node->get_type();
@@ -189,35 +193,38 @@ ExpList:
     };
 
 Type:
-    INT                             { $$.e_type = TYPE_INT; }
+    INT                             {
+      // debugPrint("Type INT");
+      $$.e_type = TYPE_INT;
+    }
     |   BYTE                        { $$.e_type = TYPE_BYTE; }
     |   BOOL                        { $$.e_type = TYPE_BOOL; };
 
 Exp:
     LPAREN Exp RPAREN               {
-      debugPrint("Exp LPAREN Exp RPAREN");
+      // debugPrint("Exp LPAREN Exp RPAREN");
       $$ = $2;
     }
     | Exp PLUS_MINUS Exp            {
-      debugPrint("Exp Exp PLUS_MINUS Exp");
+      // debugPrint("Exp Exp PLUS_MINUS Exp");
       $$.node = new Exp($1, *$2.str_value, $3);
       $$.i_value = $$.node->get_value();
       $$.e_type = $$.node->get_type();
     }
     | Exp MUL_DIV Exp               {
-      debugPrint("Exp Exp MUL_DIV Exp");
+      // debugPrint("Exp Exp MUL_DIV Exp");
       $$.node = new Exp($1, *$2.str_value, $3);
       $$.i_value = $$.node->get_value();
       $$.e_type = $$.node->get_type();
     }
     | ID                            {
-      debugPrint("Exp ID");
+      // debugPrint("Exp ID");
       $$.node = new Exp(*$1.str_value);
       $$.i_value = $$.node->get_value();
       $$.e_type = $$.node ->get_type();
     }
     | Call                          {
-      debugPrint("Exp Call");
+      // debugPrint("Exp Call");
       $$ = $1;
     }
     | NUM                           {
@@ -260,13 +267,13 @@ Exp:
       $$.e_type = $$.node->get_type();
     }
     | Exp EQ_RELOP Exp              {
-      debugPrint("Exp EQ_RELOP Exp");
+      // debugPrint("Exp EQ_RELOP Exp");
       $$.node = new Exp($1, *$2.str_value, $3);
       $$.i_value = $$.node->get_value();
       $$.e_type = $$.node->get_type();
     }
     | Exp RELOP Exp                 {
-      debugPrint("Exp Exp RELOP Exp");
+      // debugPrint("Exp Exp RELOP Exp");
       $$.node = new Exp($1, *$2.str_value, $3);
       $$.i_value = $$.node->get_value();
       $$.e_type = $$.node->get_type();
@@ -284,7 +291,7 @@ int main() {
 void yyerror(char const* s) {
     output::errorSyn(yylineno);
     /* For debugging */
-    cout << "syntax error from token: " << yytext << endl;
+    /* cout << "syntax error from token: " << yytext << endl; */
     exit(1);
 }
 

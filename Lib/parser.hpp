@@ -37,10 +37,10 @@ void init_program();
 void close_program();
 void return_value_check(TypeEnum return_type);
 void close_scope();
-void declare_function(yystype y_identifier, yystype y_arguments);
+void func_init(yystype y_identifier, yystype y_arguments);
 void declare_formals(yystype yy_formals);
 void assign_value(yystype y_identifier, yystype y_expression);
-void declare_var(yystype y_identifier, bool isLocal);
+void variable_init(yystype y_identifier, bool isLocal);
 
 class Exp : public Node
 {
@@ -79,11 +79,11 @@ public:
     this->list.push_back(yy_formal);
   }
 
-  FormalsList(yystype yy_formals_list, yystype additional)
+  FormalsList(yystype yy_formals_list, yystype yy_formal)
   {
     auto formals_list = dynamic_cast<FormalsList *>(yy_formals_list.node);
     this->list.insert(this->list.begin(), formals_list->list.begin(), formals_list->list.end());
-    this->list.push_back(additional);
+    this->list.push_back(yy_formal);
   }
 };
 

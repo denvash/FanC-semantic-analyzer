@@ -182,10 +182,10 @@ public:
   /* return [TYPE_UNDEFINED] if not exists */
   vector<TypeEnum> get_function_args(const string &identifier)
   {
-    debugTable("Getting functions args");
+    // debugTable("Getting functions args");
     if (!this->is_func_exists(identifier))
     {
-      debugTable("Func not exists");
+      // debugTable("Func not exists");
       return vector<TypeEnum>(1, TYPE_UNDEFINED);
     }
     return this->get_entry(identifier).type_info.arg_types;

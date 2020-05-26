@@ -1,15 +1,1 @@
-[semantic rule] Init program
-[semantic rule] RetType VOID
-[semantic rule] Formals Epsilon
-[semantic rule] FuncDecl RetType ID LPAREN Formals RPAREN
-[parser] declaring function
-[parser:function] main
-[parser] In declaring function, no arguments
-[semantic rule] Statement Type ID ASSIGN Exp SC
-[parser] Declaring var
-[parser:var]: BOOL
-[semantic rule] Statements Statement
-[semantic rule] Exp ID
-[semantic rule] IfExp IF LPAREN Exp RPAREN
 line 4: syntax error
-syntax error from token: 3
