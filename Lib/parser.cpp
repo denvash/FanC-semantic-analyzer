@@ -150,6 +150,7 @@ void close_scope()
     output::printID(id, offset, type_str);
   }
   semantic_table.close_scope();
+  // debugParser("[parser:close-scope] scope closed after printing IDs");
   /* print types */
 }
 
@@ -215,6 +216,22 @@ void func_init(yystype y_identifier, yystype y_arguments)
 
   // semantic_table.open_scope();
   semantic_table.func_info = func;
+}
+
+void variable_init(yystype y_identifier, bool isLocal)
+{
+  // debugParser("Declaring var");
+  // cout << "[parser:var]: " << type_to_string_map[y_identifier.e_type] << endl;
+  // cout << "[parser:str_value]: " << *y_identifier.str_value << endl;
+  if (semantic_table.exists(*y_identifier.str_value))
+  {
+    error_handle(output::errorDef, yylineno, *y_identifier.str_value);
+  }
+  var_info_t var;
+  var.is_func = false;
+  var.type = y_identifier.e_type;
+  var.size = type_size_map[y_identifier.e_type];
+  semantic_table.insert(*y_identifier.str_value, &var, isLocal);
 }
 
 void declare_formals(yystype yy_formals)
@@ -432,20 +449,4 @@ void assign_value(yystype y_identifier, yystype y_expression)
   {
     error_handle(output::errorMismatch, yylineno);
   }
-}
-
-void variable_init(yystype y_identifier, bool isLocal)
-{
-
-  if (semantic_table.exists(*y_identifier.str_value))
-  {
-    error_handle(output::errorDef, yylineno, *y_identifier.str_value);
-  }
-  // debugParser("Declaring var");
-  // cout << "[parser:var]: " << type_to_string_map[y_identifier.e_type] << endl;
-  var_info_t var;
-  var.is_func = false;
-  var.type = y_identifier.e_type;
-  var.size = type_size_map[y_identifier.e_type];
-  semantic_table.insert(*y_identifier.str_value, &var, isLocal);
 }

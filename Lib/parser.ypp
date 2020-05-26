@@ -60,7 +60,9 @@ FuncDecl:
       semantic_table.open_scope();
       declare_formals($4);
     }
-    LBRACE Statements RBRACE CloseScope;
+    LBRACE Statements RBRACE CloseScope {
+      // debugPrint("FuncDecl Continue: LBRACE Statements RBRACE CloseScope");
+    };
 
 RetType:
     Type                            {
@@ -186,7 +188,9 @@ ExpList:
       $$.i_value = $$.node->get_value();
       $$.e_type = $$.node->get_type();
     }
-    | Exp COMMA ExpList             {
+    /* Reverse Explint and Exp */
+    | ExpList COMMA Exp             {
+      // debugPrint("ExpList Exp COMMA ExpList");
       $$.node = new ExpList($1, $3);
       $$.i_value = $$.node->get_value();
       $$.e_type = $$.node->get_type();
