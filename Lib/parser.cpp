@@ -1,6 +1,7 @@
 #include "parser.hpp"
 
 SemanticTable semantic_table;
+int while_scope_count = 0;
 
 /*
   TYPE_UNDEFINED,
@@ -13,6 +14,7 @@ SemanticTable semantic_table;
   HELP_TYPE_NUM_TO_STRING
   */
 
+/* Order matters */
 int type_size_map[HELP_TYPE_NUM] = {
     0, // TYPE_NONE
     0, // TYPE_VOID
@@ -23,6 +25,7 @@ int type_size_map[HELP_TYPE_NUM] = {
     1  // TYPE_B
 };
 
+/* Order matters */
 string type_to_string_map[HELP_TYPE_NUM] = {
     "",
     "VOID",
@@ -33,60 +36,70 @@ string type_to_string_map[HELP_TYPE_NUM] = {
     "B",
 };
 
+/* Order matters */
 bool converstion_map[HELP_TYPE_NUM][HELP_TYPE_NUM] = {
-    /* TYPE_UNDEFINED to */ {
+    /* TYPE_UNDEFINED to  */ {
         /* TYPE_UNDEFINED */ true,
-        /* TYPE_VOID */ false,
-        /* TYPE_BOOL */ false,
-        /* TYPE_INT */ false,
-        /* TYPE_BYTE */ false,
-        /* TYPE_STRING */ false,
-        /* TYPE_B */ false,
-
+        /* TYPE_VOID      */ false,
+        /* TYPE_BOOL      */ false,
+        /* TYPE_INT       */ false,
+        /* TYPE_BYTE      */ false,
+        /* TYPE_STRING    */ false,
+        /* TYPE_B         */ false,
     },
-    /* TYPE_VOID to */ {
+    /* TYPE_VOID to       */ {
         /* TYPE_UNDEFINED */ false,
-        /* TYPE_VOID */ true,
-        /* TYPE_BOOL */ false,
-        /* TYPE_INT */ false,
-        /* TYPE_BYTE */ false,
-        /* TYPE_STRING */ false,
-        /* TYPE_B */ false,
+        /* TYPE_VOID      */ true,
+        /* TYPE_BOOL      */ false,
+        /* TYPE_INT       */ false,
+        /* TYPE_BYTE      */ false,
+        /* TYPE_STRING    */ false,
+        /* TYPE_B         */ false,
     },
-    /* TYPE_BOOL to */ {/* TYPE_UNDEFINED */ false,
-                        /* TYPE_VOID */ false,
-                        /* TYPE_BOOL */ true,
-                        /* TYPE_INT */ false,
-                        /* TYPE_BYTE */ false,
-                        /* TYPE_STRING */ false,
-                        /* TYPE_B */ false},
-    /* TYPE_INT to */ {/* TYPE_UNDEFINED */ false,
-                       /* TYPE_VOID */ false,
-                       /* TYPE_BOOL */ false,
-                       /* TYPE_INT */ true,
-                       /* TYPE_BYTE */ false,
-                       /* TYPE_STRING */ false},
-    /* TYPE_BYTE to */ {/* TYPE_UNDEFINED */ false,
-                        /* TYPE_VOID */ false,
-                        /* TYPE_BOOL */ false,
-                        /* TYPE_INT */ true,
-                        /* TYPE_BYTE */ true,
-                        /* TYPE_STRING */ false,
-                        /* TYPE_B */ false},
-    /* TYPE_STRING to */ {/* TYPE_UNDEFINED */ false,
-                          /* TYPE_VOID */ false,
-                          /* TYPE_BOOL */ false,
-                          /* TYPE_INT */ false,
-                          /* TYPE_BYTE */ false,
-                          /* TYPE_STRING */ true,
-                          /* TYPE_B */ false},
-    /* TYPE_B to */ {/* TYPE_UNDEFINED */ false,
-                     /* TYPE_VOID */ false,
-                     /* TYPE_BOOL */ false,
-                     /* TYPE_INT */ false,
-                     /* TYPE_BYTE */ false,
-                     /* TYPE_STRING */ true,
-                     /* TYPE_B */ true}};
+    /* TYPE_BOOL to       */ {
+        /* TYPE_UNDEFINED */ false,
+        /* TYPE_VOID      */ false,
+        /* TYPE_BOOL      */ true,
+        /* TYPE_INT       */ false,
+        /* TYPE_BYTE      */ false,
+        /* TYPE_STRING    */ false,
+        /* TYPE_B         */ false,
+    },
+    /* TYPE_INT to        */ {
+        /* TYPE_UNDEFINED */ false,
+        /* TYPE_VOID      */ false,
+        /* TYPE_BOOL      */ false,
+        /* TYPE_INT       */ true,
+        /* TYPE_BYTE      */ false,
+        /* TYPE_STRING    */ false,
+    },
+    /* TYPE_BYTE to       */ {
+        /* TYPE_UNDEFINED */ false,
+        /* TYPE_VOID      */ false,
+        /* TYPE_BOOL      */ false,
+        /* TYPE_INT       */ true,
+        /* TYPE_BYTE      */ true,
+        /* TYPE_STRING    */ false,
+        /* TYPE_B         */ false,
+    },
+    /* TYPE_STRING to     */ {
+        /* TYPE_UNDEFINED */ false,
+        /* TYPE_VOID      */ false,
+        /* TYPE_BOOL      */ false,
+        /* TYPE_INT       */ false,
+        /* TYPE_BYTE      */ false,
+        /* TYPE_STRING    */ true,
+        /* TYPE_B         */ false,
+    },
+    /* TYPE_B to */ {
+        /* TYPE_UNDEFINED */ false,
+        /* TYPE_VOID      */ false,
+        /* TYPE_BOOL      */ false,
+        /* TYPE_INT       */ false,
+        /* TYPE_BYTE      */ false,
+        /* TYPE_STRING    */ true,
+        /* TYPE_B         */ true,
+    }};
 
 inline void debugParser(const char *text)
 {

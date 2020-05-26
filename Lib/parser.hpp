@@ -11,6 +11,7 @@ using namespace std;
 
 extern SemanticTable semantic_table;
 extern int yylineno;
+extern int while_scope_count;
 
 class Node
 {

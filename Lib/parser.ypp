@@ -1,13 +1,10 @@
 %{
     #include "output.hpp"
     #include "parser.hpp"
-    #include "types.hpp"
     #include <string>
     #include <iostream>
     #include <sstream>
 
-    /* For debugging */
-    extern char* yytext;
     extern int yylex();
     extern int yylineno;
 
@@ -129,6 +126,23 @@ IfExp:
       semantic_table.open_scope();
     };
 
+WhileIn:
+    %empty                          {
+      while_scope_count++;
+    }
+
+WhileOut:
+    %empty                          {
+      while_scope_count--;
+    }
+
+WhileTypeCheck:
+   WHILE LPAREN Exp RPAREN          {
+      if ( $3.e_type != TYPE_BOOL) {
+        error_handle(output::errorMismatch, yylineno);
+      }
+   }
+
 Statement:
     /* For if () {}, two scopes should be opened */
     OpenScope LBRACE Statements RBRACE CloseScope                                    {
@@ -162,11 +176,19 @@ Statement:
     | IfExp Statement %prec NOELSE CloseScope               {
       // debugPrint("Statement IfExp Statement %prec NOELSE CloseScope");
     }
-    | IfExp Statement CloseScope ELSE Statement %prec ELSE  {}
-    | WHILE LPAREN Exp RPAREN Statement %prec NOELSE            {}
-    | WHILE LPAREN Exp RPAREN Statement ELSE Statement          {}
-    | BREAK SC                                                  {}
-    | CONTINUE SC                                               {};
+    | IfExp Statement CloseScope ELSE Statement %prec ELSE           {}
+    | WhileTypeCheck OpenScope WhileIn Statement CloseScope WhileOut %prec NOELSE   {}
+    | WhileTypeCheck OpenScope WhileIn Statement CloseScope WhileOut ELSE Statement {}
+    | BREAK SC                                                  {
+      if (while_scope_count <= 0) {
+        error_handle(output::errorUnexpectedBreak, yylineno);
+      }
+    }
+    | CONTINUE SC                                               {
+      if (while_scope_count <= 0) {
+        error_handle(output::errorUnexpectedContinue, yylineno);
+      }
+    };
 
 Call:
     ID LPAREN ExpList RPAREN        {
@@ -294,8 +316,6 @@ int main() {
 
 void yyerror(char const* s) {
     output::errorSyn(yylineno);
-    /* For debugging */
-    /* cout << "syntax error from token: " << yytext << endl; */
     exit(1);
 }
 
