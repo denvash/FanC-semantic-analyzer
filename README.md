@@ -1,4 +1,4 @@
-# Slim - FanC Syntax Analyzer
+# Slim - FanC Semantic Analyzer
 
 ## Usage
 

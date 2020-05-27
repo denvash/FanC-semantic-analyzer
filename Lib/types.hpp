@@ -3,12 +3,14 @@
 
 typedef enum
 {
-  TYPE_B,
-  TYPE_BOOL,
-  TYPE_BYTE,
-  TYPE_INT,
+  TYPE_UNDEFINED,
   TYPE_VOID,
-  TYPE_UNDEFINED
+  TYPE_BOOL,
+  TYPE_INT,
+  TYPE_BYTE,
+  TYPE_STRING,
+  TYPE_B,
+  HELP_TYPE_NUM
 } TypeEnum;
 
 #endif /* TYPES_HPP */

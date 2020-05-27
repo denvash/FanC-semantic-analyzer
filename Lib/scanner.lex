@@ -1,16 +1,12 @@
 %{
+  #include "parser.hpp"
+  #include "parser.tab.hpp"
+  #include <string.h>
+  #include <stdarg.h>
 
-#include "output.hpp"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
-#include "parser.hpp"
-#include "parser.tab.hpp"
-
-#define _(TOKEN) { return TOKEN; }
-#define _ERROR(NUM) { output::errorLex(NUM); exit(0); }
-
+  #define _(TOKEN) { return TOKEN; }
+  #define _ERROR(NUM) { output::errorLex(NUM); exit(0); }
+  #define ASSIGN_YYLVAL { yylval.str_value = new string(yytext); }
 %}
 
 %option noyywrap
@@ -24,39 +20,61 @@ SPACE   (\x20)
 TAB     (\x09)
 %%
 
-void                                                                  {yylval=new Type(TYPE_VOID);return VOID;}
-int                                                                   {yylval=new Type(TYPE_INT);return INT;}
-byte                                                                  {yylval=new Type(TYPE_BYTE);return BYTE;}
-b                                                                     {yylval=new Type(TYPE_B);return B;}
-bool                                                                  {yylval=new Type(TYPE_BOOL);return BOOL;}
-and                                                                   _(AND);
-or                                                                    _(OR);
-not                                                                   _(NOT);
-true                                                                  _(TRUE);
-false                                                                 _(FALSE);
-return                                                                _(RETURN);
-if                                                                    _(IF);
-else                                                                  _(ELSE);
-while                                                                 _(WHILE);
-break                                                                 _(BREAK);
-continue                                                              _(CONTINUE);
-;                                                                     _(SC);
-,                                                                     _(COMMA);
-\(                                                                    _(LPAREN);
-\)                                                                    _(RPAREN);
-\{                                                                    _(LBRACE);
-\}                                                                    _(RBRACE);
-=                                                                     _(ASSIGN);
->=|<=|<|>                                                             _(RELOP);
-==|!=                                                                 _(EQ_RELOP);
-\+|-                                                                  _(PLUS_MINUS)
-\*|\/                                                                 _(MUL_DIV)
-[a-zA-Z][a-zA-Z0-9]*                                                  {yylval=new Str(strdup(yytext));return ID;}
-0|[1-9][0-9]*                                                         {yylval=new Num(atoi(yytext));return NUM;}
-\"([^\n\r\"\\]|\\[rnt"\\])+\"                                         {yylval=new Str(strdup(yytext));return STRING;}
-{CR}|{LF}|{TAB}|{SPACE}                                               /* ignore */;
-"//"[^\r\n]*[\r|\n|\r\n]?                                             /* ignore */;
-.                                                                     _ERROR(yylineno);
+void                           _(VOID);
+int                            _(INT);
+byte                           _(BYTE);
+b                              _(B);
+bool                           _(BOOL);
+and                            _(AND);
+or                             _(OR);
+not                            _(NOT);
+true                           _(TRUE);
+false                          _(FALSE);
+return                         _(RETURN);
+if                             _(IF);
+else                           _(ELSE);
+while                          _(WHILE);
+break                          _(BREAK);
+continue                       _(CONTINUE);
+;                              _(SC);
+,                              _(COMMA);
+\(                             _(LPAREN);
+\)                             _(RPAREN);
+\{                             _(LBRACE);
+\}                             _(RBRACE);
+=                              _(ASSIGN);
+>=|<=|<|>                      {
+                                  ASSIGN_YYLVAL;
+                                  _(RELOP);
+                               }
+==|!=                          {
+                                  ASSIGN_YYLVAL;
+                                  _(EQ_RELOP);
+                               }
+\+|-                           {
+                                  ASSIGN_YYLVAL;
+                                  _(PLUS_MINUS);
+                               }
+\*|\/                          {
+                                  ASSIGN_YYLVAL;
+                                  _(MUL_DIV);
+                               }
+[a-zA-Z][a-zA-Z0-9]*           {
+                                  ASSIGN_YYLVAL;
+                                  _(ID);
+                               }
+0|[1-9][0-9]*                  {
+                                  yylval.e_type = TYPE_INT;
+                                  yylval.i_value = atoi(yytext);
+                                  _(NUM);
+                               }
+\"([^\n\r\"\\]|\\[rnt"\\])+\"  {
+                                  yylval.e_type = TYPE_STRING;
+                                  ASSIGN_YYLVAL;
+                                  yylval.i_value = 1;
+                                  _(STRING);
+                               }
+{CR}|{LF}|{TAB}|{SPACE}        /* ignore */;
+"//"[^\r\n]*[\r|\n|\r\n]?      /* ignore */;
+.                              _ERROR(yylineno);
 %%
-
-
