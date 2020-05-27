@@ -5,8 +5,6 @@
 #include "semantic_table.hpp"
 #include "error_handler.hpp"
 
-#include "semantic_table.hpp"
-//#include "output.hpp";
 using namespace std;
 
 #define YYSTYPE yystype
@@ -18,39 +16,22 @@ extern int while_scope_count;
 class Node
 {
 public:
-    TypeEnum typee;
-    virtual int get_value()
-    {
-        return 0;
-    }
-    virtual TypeEnum get_type()
-    {
-        return TYPE_UNDEFINED;
-    }
+  virtual int get_value()
+  {
+    return 0;
+  }
+  virtual TypeEnum get_type()
+  {
+    return TYPE_UNDEFINED;
+  }
 };
 
-class Num : public Node{
-public:
-    int value;
-    Num(int number){
-        value=number;
-    }
-};
-
-class Str : public Node{
-public:
-    char* value;
-    Str(char* name){
-        value=name;
-    }
-};
-
-class Type : public Node{
-public:
-    TypeEnum type;
-    Type(TypeEnum typeE){
-        type=typeE;
-    }
+struct yystype
+{
+  int i_value;
+  TypeEnum e_type;
+  string *str_value;
+  Node *node;
 };
 
 void init_program();
