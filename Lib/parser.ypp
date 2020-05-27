@@ -1,20 +1,8 @@
 %{
-    #include "parser.hpp"
     #include "output.hpp"
     #include "parser.hpp"
     #include <string>
     #include <iostream>
-<<<<<<< HEAD
-    using namespace std;
-    void yyerror(char const*);
-    extern int yylex();
-    extern int yylineno;
-    /* For debugging */
-    // extern char* yytext;
-
-
-
-=======
     #include <sstream>
 
     extern int yylex();
@@ -23,25 +11,9 @@
     using namespace std;
     void debugPrint(char const*);
     void yyerror(char const*);
->>>>>>> origin/init
 %}
 
-
-
-//%token VOID INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE ID NUM STRING
-%token  TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE
-
-%token <str_value> STRING ID
-%token <i_value> NUM
-%token <e_type> BOOL
-%token <e_type> B
-%token <e_type> BYTE
-%token <e_type> INT
-%token <e_type> VOID
-
-//%type <type> Type RetType
-//%type <type> FormalsList FORMAL_COMMA FormalDecl
-
+%token VOID INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE ID NUM STRING
 
 /* https://introcs.cs.princeton.edu/java/11precedence/ */
 %right ASSIGN
@@ -89,7 +61,6 @@ FuncDecl:
       // debugPrint("FuncDecl Continue: LBRACE Statements RBRACE CloseScope");
     };
 
-
 RetType:
     Type                            {
       // debugPrint("RetType Type");
@@ -111,14 +82,6 @@ Formals:
     };
 
 FormalsList:
-<<<<<<< HEAD
-    FormalDecl                      {$$->arguments_types.push_back($1->type);}
-    | FormalDecl FORMAL_COMMA       {vector<TypeEnum> arguments_types;
-                                    arguments_types.push_back($1->type);
-                                    arguments_types.insert(arguments_types.end(),$2->arguments_types.begin(),$2->arguments_types.end());
-                                     $$->arguments_types=arguments_types;}
-;
-=======
     FormalDecl                      {
       // debugPrint("FormalsList FormalDecl");
       $$.node = new FormalsList($1);
@@ -128,22 +91,13 @@ FormalsList:
       // debugPrint("FormalsList FormalDecl COMMA FormalsList");
       $$.node = new FormalsList($1, $3);
     };
->>>>>>> origin/init
-
-FORMAL_COMMA: COMMA FormalsList  {$$->arguments_types=$2->arguments_types;}
-
 
 FormalDecl:
-<<<<<<< HEAD
-    Type ID                         {$$->type=$1->type;}
-;
-=======
     Type ID                         {
       // debugPrint("FormalDecl Type ID");
       $$.e_type = $1.e_type;
       $$.str_value = $2.str_value;
     };
->>>>>>> origin/init
 
 Statements:
     Statement                       {
@@ -355,14 +309,8 @@ Exp:
 %%
 
 int main() {
-<<<<<<< HEAD
-   SemanticTable* st=new SemanticTable();
-   st->initTable();
-   yyparse();
-=======
     yyparse();
     close_program();
->>>>>>> origin/init
     return 0;
 }
 
