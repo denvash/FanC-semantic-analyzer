@@ -3,7 +3,7 @@
 
 #include "output.hpp"
 #include "semantic_table.hpp"
-#include "error_handler.hpp"
+#include "err.hpp"
 
 using namespace std;
 
@@ -53,7 +53,7 @@ public:
   Exp(string identifier)
   {
     if (!semantic_table.is_var_exists(identifier))
-      error_handle(output::errorUndef, yylineno, identifier);
+      err(output::errorUndef, yylineno, identifier);
     auto entry = semantic_table.get_entry(identifier);
     id = identifier;
     type = entry.type_info.type;
@@ -95,7 +95,7 @@ public:
   {
     if (yy_exp.e_type != TYPE_BOOL)
     {
-      error_handle(output::errorMismatch, yylineno);
+      err(output::errorMismatch, yylineno);
     }
   }
 };

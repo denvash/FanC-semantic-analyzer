@@ -8,3 +8,4 @@ build
 *.output
 parser
 Tests/out
+Tests/exclude

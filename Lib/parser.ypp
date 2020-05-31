@@ -139,7 +139,7 @@ WhileOut:
 WhileTypeCheck:
    WHILE LPAREN Exp RPAREN          {
       if ( $3.e_type != TYPE_BOOL) {
-        error_handle(output::errorMismatch, yylineno);
+        err(output::errorMismatch, yylineno);
       }
    }
 
@@ -181,12 +181,12 @@ Statement:
     | WhileTypeCheck OpenScope WhileIn Statement CloseScope WhileOut ELSE Statement {}
     | BREAK SC                                                  {
       if (while_scope_count <= 0) {
-        error_handle(output::errorUnexpectedBreak, yylineno);
+        err(output::errorUnexpectedBreak, yylineno);
       }
     }
     | CONTINUE SC                                               {
       if (while_scope_count <= 0) {
-        error_handle(output::errorUnexpectedContinue, yylineno);
+        err(output::errorUnexpectedContinue, yylineno);
       }
     };
 
@@ -262,7 +262,7 @@ Exp:
       $$.i_value = $1.i_value;
       if ($1.i_value > 255) {
         auto s = static_cast<ostringstream*>( &(ostringstream() << $1.i_value) )->str();
-        error_handle(output::errorByteTooLarge, yylineno, s);
+        err(output::errorByteTooLarge, yylineno, s);
       }
     }
     | STRING                        {

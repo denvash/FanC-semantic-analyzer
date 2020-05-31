@@ -173,17 +173,17 @@ void close_program()
   if (!semantic_table.is_func_exists("main"))
   {
     // debugParser("No func exists");
-    error_handle(output::errorMainMissing);
+    err(output::errorMainMissing);
   }
   if (semantic_table.get_function_args("main").front() != TYPE_VOID)
   {
     // debugParser("Main with args");
-    error_handle(output::errorMainMissing);
+    err(output::errorMainMissing);
   }
   if (semantic_table.get_function_type("main") != TYPE_VOID)
   {
     // debugParser("wrong type");
-    error_handle(output::errorMainMissing);
+    err(output::errorMainMissing);
   }
   close_scope();
 }
@@ -194,7 +194,7 @@ void return_value_check(TypeEnum return_type)
   bool validConversion = converstion_map[return_type][semantic_table.get_current_function_type()];
   if (!validConversion)
   {
-    error_handle(output::errorMismatch, yylineno);
+    err(output::errorMismatch, yylineno);
   }
 }
 
@@ -204,7 +204,7 @@ void func_init(yystype y_identifier, yystype y_arguments)
   // cout << "[parser:function] " << *y_identifier.str_value << endl;
   if (semantic_table.exists(*y_identifier.str_value))
   {
-    error_handle(output::errorDef, yylineno, *y_identifier.str_value);
+    err(output::errorDef, yylineno, *y_identifier.str_value);
   }
   var_info_t func;
   func.is_func = true;
@@ -238,7 +238,7 @@ void variable_init(yystype y_identifier, bool isLocal)
   // cout << "[parser:str_value]: " << *y_identifier.str_value << endl;
   if (semantic_table.exists(*y_identifier.str_value))
   {
-    error_handle(output::errorDef, yylineno, *y_identifier.str_value);
+    err(output::errorDef, yylineno, *y_identifier.str_value);
   }
   var_info_t var;
   var.is_func = false;
@@ -269,14 +269,14 @@ Exp::Exp(yystype a, string op, yystype b)
   if (op == "and")
   {
     if (a.e_type != TYPE_BOOL || b.e_type != TYPE_BOOL)
-      error_handle(output::errorMismatch, yylineno);
+      err(output::errorMismatch, yylineno);
     value = a.i_value && b.i_value;
     type = TYPE_BOOL;
   }
   else if (op == "or")
   {
     if (a.e_type != TYPE_BOOL || b.e_type != TYPE_BOOL)
-      error_handle(output::errorMismatch, yylineno);
+      err(output::errorMismatch, yylineno);
     value = a.i_value || b.i_value;
     type = TYPE_BOOL;
   }
@@ -376,7 +376,7 @@ Exp::Exp(yystype a, string op, yystype b)
   }
   if (mismatch)
   {
-    error_handle(output::errorMismatch, yylineno);
+    err(output::errorMismatch, yylineno);
   }
 }
 
@@ -384,7 +384,7 @@ Call::Call(yystype identifier, yystype yy_exp_list)
 {
   if (!semantic_table.is_func_exists(*identifier.str_value))
   {
-    error_handle(output::errorUndefFunc, yylineno, *identifier.str_value);
+    err(output::errorUndefFunc, yylineno, *identifier.str_value);
   }
 
   auto exp_list = dynamic_cast<ExpList *>(yy_exp_list.node);
@@ -404,7 +404,7 @@ Call::Call(yystype identifier, yystype yy_exp_list)
       auto typeUndefined = type_to_string_map[TYPE_UNDEFINED];
       args.front() = args.front() == typeVoid ? typeUndefined : args.front();
     }
-    error_handle(output::errorPrototypeMismatch, yylineno, *identifier.str_value, args);
+    err(output::errorPrototypeMismatch, yylineno, *identifier.str_value, args);
   }
 
   for (int i = 0; i < args_type.size(); i++)
@@ -418,7 +418,7 @@ Call::Call(yystype identifier, yystype yy_exp_list)
       {
         args.push_back(type_to_string_map[args_type[j]]);
       }
-      error_handle(output::errorPrototypeMismatch, yylineno, *identifier.str_value, args);
+      err(output::errorPrototypeMismatch, yylineno, *identifier.str_value, args);
     }
   }
 
@@ -429,7 +429,7 @@ Call::Call(yystype identifier)
 {
   if (!semantic_table.is_func_exists(*identifier.str_value))
   {
-    error_handle(output::errorUndefFunc, yylineno, *identifier.str_value);
+    err(output::errorUndefFunc, yylineno, *identifier.str_value);
   }
   vector<TypeEnum> args_type = semantic_table.get_function_args(*identifier.str_value);
   if (args_type.size() != 1 || args_type.front() != TYPE_VOID)
@@ -441,7 +441,7 @@ Call::Call(yystype identifier)
       args.front() = args.front() == "VOID" ? "" : args.front();
     }
 
-    error_handle(output::errorPrototypeMismatch, yylineno, *identifier.str_value, args);
+    err(output::errorPrototypeMismatch, yylineno, *identifier.str_value, args);
   }
   this->type = semantic_table.get_function_type(*identifier.str_value);
 }
@@ -450,16 +450,16 @@ void assign_value(yystype y_identifier, yystype y_expression)
 {
   if (!semantic_table.exists(*y_identifier.str_value))
   {
-    error_handle(output::errorUndef, yylineno, *y_identifier.str_value);
+    err(output::errorUndef, yylineno, *y_identifier.str_value);
   }
   auto entry = semantic_table.get_entry(*y_identifier.str_value);
   if (entry.type_info.is_func)
   {
-    error_handle(output::errorUndef, yylineno, *y_identifier.str_value);
+    err(output::errorUndef, yylineno, *y_identifier.str_value);
   }
   bool is_valid = converstion_map[y_expression.e_type][entry.type_info.type];
   if (!is_valid)
   {
-    error_handle(output::errorMismatch, yylineno);
+    err(output::errorMismatch, yylineno);
   }
 }
