@@ -198,7 +198,7 @@ void return_value_check(TypeEnum return_type)
   }
 }
 
-void func_init(yystype y_identifier, yystype y_arguments)
+void func_init(atom_t y_identifier, atom_t y_arguments)
 {
   // debugParser("declaring function");
   // cout << "[parser:function] " << *y_identifier.str_value << endl;
@@ -231,7 +231,7 @@ void func_init(yystype y_identifier, yystype y_arguments)
   semantic_table.func_info = func;
 }
 
-void variable_init(yystype y_identifier, bool isLocal)
+void variable_init(atom_t y_identifier, bool isLocal)
 {
   // debugParser("Declaring var");
   // cout << "[parser:var]: " << type_to_string_map[y_identifier.e_type] << endl;
@@ -247,7 +247,7 @@ void variable_init(yystype y_identifier, bool isLocal)
   semantic_table.insert(*y_identifier.str_value, &var, isLocal);
 }
 
-void declare_formals(yystype yy_formals)
+void declare_formals(atom_t yy_formals)
 {
   if (yy_formals.node == NULL)
   {
@@ -262,7 +262,7 @@ void declare_formals(yystype yy_formals)
   semantic_table.offsets.top() = 0;
 }
 
-Exp::Exp(yystype a, string op, yystype b)
+Exp::Exp(atom_t a, string op, atom_t b)
 {
   /* check types */
   bool mismatch = false;
@@ -380,7 +380,7 @@ Exp::Exp(yystype a, string op, yystype b)
   }
 }
 
-Call::Call(yystype identifier, yystype yy_exp_list)
+Call::Call(atom_t identifier, atom_t yy_exp_list)
 {
   if (!semantic_table.is_func_exists(*identifier.str_value))
   {
@@ -425,7 +425,7 @@ Call::Call(yystype identifier, yystype yy_exp_list)
   this->type = semantic_table.get_function_type(*identifier.str_value);
 }
 
-Call::Call(yystype identifier)
+Call::Call(atom_t identifier)
 {
   if (!semantic_table.is_func_exists(*identifier.str_value))
   {
@@ -446,7 +446,7 @@ Call::Call(yystype identifier)
   this->type = semantic_table.get_function_type(*identifier.str_value);
 }
 
-void assign_value(yystype y_identifier, yystype y_expression)
+void assign_value(atom_t y_identifier, atom_t y_expression)
 {
   if (!semantic_table.exists(*y_identifier.str_value))
   {

@@ -26,7 +26,7 @@ public:
   }
 };
 
-struct yystype
+struct atom_t
 {
   int i_value;
   TypeEnum e_type;
@@ -38,10 +38,10 @@ void init_program();
 void close_program();
 void return_value_check(TypeEnum return_type);
 void close_scope();
-void func_init(yystype y_identifier, yystype y_arguments);
-void declare_formals(yystype yy_formals);
-void assign_value(yystype y_identifier, yystype y_expression);
-void variable_init(yystype y_identifier, bool isLocal);
+void func_init(atom_t y_identifier, atom_t y_arguments);
+void declare_formals(atom_t yy_formals);
+void assign_value(atom_t y_identifier, atom_t y_expression);
+void variable_init(atom_t y_identifier, bool isLocal);
 
 class Exp : public Node
 {
@@ -59,7 +59,7 @@ public:
     type = entry.type_info.type;
   }
 
-  Exp(yystype a, string op, yystype b); /* implemented in cpp */
+  Exp(atom_t a, string op, atom_t b); /* implemented in cpp */
 
   virtual int get_value()
   {
@@ -74,13 +74,13 @@ public:
 class FormalsList : public Node
 {
 public:
-  vector<yystype> list;
-  FormalsList(yystype yy_formal)
+  vector<atom_t> list;
+  FormalsList(atom_t yy_formal)
   {
     this->list.push_back(yy_formal);
   }
 
-  FormalsList(yystype yy_formals_list, yystype yy_formal)
+  FormalsList(atom_t yy_formals_list, atom_t yy_formal)
   {
     auto formals_list = dynamic_cast<FormalsList *>(yy_formals_list.node);
     this->list.insert(this->list.begin(), formals_list->list.begin(), formals_list->list.end());
@@ -91,7 +91,7 @@ public:
 class IfExp : public Node
 {
 public:
-  IfExp(yystype yy_exp)
+  IfExp(atom_t yy_exp)
   {
     if (yy_exp.e_type != TYPE_BOOL)
     {
@@ -106,9 +106,9 @@ public:
   TypeEnum type;
   int value;
 
-  Call(yystype identifier);
+  Call(atom_t identifier);
 
-  Call(yystype identifier, yystype yy_exp_list); /* in .cpp */
+  Call(atom_t identifier, atom_t yy_exp_list); /* in .cpp */
 
   virtual TypeEnum get_type()
   {
@@ -119,12 +119,12 @@ public:
 class ExpList : public Node
 {
 public:
-  vector<yystype> list;
-  ExpList(yystype exp)
+  vector<atom_t> list;
+  ExpList(atom_t exp)
   {
     list.push_back(exp);
   }
-  ExpList(yystype exp_list_yy, yystype yy_exp_added)
+  ExpList(atom_t exp_list_yy, atom_t yy_exp_added)
   {
     ExpList *exp_list = dynamic_cast<ExpList *>(exp_list_yy.node);
     this->list.insert(this->list.begin(), exp_list->list.begin(), exp_list->list.end());
