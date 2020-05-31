@@ -3,23 +3,17 @@
   #include "parser.tab.hpp"
   #include <string.h>
   #include <stdarg.h>
-
   #define _(TOKEN) { return TOKEN; }
   #define _ERROR(NUM) { output::errorLex(NUM); exit(0); }
-  #define ASSIGN_YYLVAL { yylval.str_value = new string(yytext); }
+  #define ASSIGN_YYLVAL { yylval.STRING = new string(yytext); }
 %}
-
 %option noyywrap
 %option yylineno
-
-
-
 CR      (\x0D)
 LF      (\x0A)
 SPACE   (\x20)
 TAB     (\x09)
 %%
-
 void                           _(VOID);
 int                            _(INT);
 byte                           _(BYTE);
@@ -64,14 +58,14 @@ continue                       _(CONTINUE);
                                   _(ID);
                                }
 0|[1-9][0-9]*                  {
-                                  yylval.e_type = TYPE_INT;
-                                  yylval.i_value = atoi(yytext);
+                                  yylval.TYPE = TYPE_INT;
+                                  yylval.INT = atoi(yytext);
                                   _(NUM);
                                }
 \"([^\n\r\"\\]|\\[rnt"\\])+\"  {
-                                  yylval.e_type = TYPE_STRING;
+                                  yylval.TYPE = TYPE_STRING;
                                   ASSIGN_YYLVAL;
-                                  yylval.i_value = 1;
+                                  yylval.INT = 1;
                                   _(STRING);
                                }
 {CR}|{LF}|{TAB}|{SPACE}        /* ignore */;

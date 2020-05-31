@@ -1,5 +1,5 @@
-#ifndef SEMANTIC_TABLE_HPP
-#define SEMANTIC_TABLE_HPP
+#ifndef TABLE_HPP
+#define TABLE_HPP
 
 #include "types.hpp"
 #include <iostream>
@@ -61,21 +61,20 @@ private:
 
 public:
   stack<int> offsets;
-  vector<table_entry_t *> func_scopes;
+  vector<table_entry_t *> scopes;
   var_info_t func_info;
 
   void init_table()
   {
     auto firstTable = new table_t();
     firstTable->parent = NULL;
-    func_scopes = vector<table_entry_t *>();
+    scopes = vector<table_entry_t *>();
     tables.push(firstTable);
     offsets.push(0);
   }
 
   void close_scope()
   {
-    table_t *tmp = tables.top();
     tables.pop();
     offsets.pop();
   }
@@ -86,24 +85,18 @@ public:
     table->parent = tables.top();
     tables.push(table);
     offsets.push(offsets.top());
-    // debugTable("open scope");
   }
 
-  bool exists(string name)
+  bool id_is_exists(string name)
   {
-    bool found = false;
-    for (table_t *currentTable = tables.top();
-         currentTable->parent;
-         currentTable = currentTable->parent)
+    for (auto table = tables.top(); table->parent; table = table->parent)
     {
-      vector<table_entry_t *>::iterator search = currentTable->find(name);
-      if (search != currentTable->table.end())
+      if (table->find(name) != table->table.end())
       {
-        found = true;
-        break;
+        return true;
       }
     }
-    return found;
+    return false;
   }
 
   vector<table_entry_t *> get_current_inner_scope()
@@ -132,7 +125,7 @@ public:
     if (entry->type_info.is_func)
     {
       entry->offset = 0;
-      func_scopes.push_back(entry);
+      scopes.push_back(entry);
     }
     tables.top()->table.push_back(entry);
   }
@@ -144,25 +137,22 @@ public:
     entry->offset = 0;
     entry->type_info.type = TYPE_UNDEFINED;
 
-    vector<table_entry_t *>::iterator search;
-    for (table_t *currentTable = tables.top();
-         currentTable->parent;
-         currentTable = currentTable->parent)
+    for (auto table = tables.top(); table->parent; table = table->parent)
     {
-      search = currentTable->find(name);
-      if (search != currentTable->table.end())
+      auto table_iterator = table->find(name);
+      if (table_iterator != table->table.end())
       {
-        entry = *search;
+        entry = *table_iterator;
       }
     }
     if (entry->name == "")
     {
-      for (vector<table_entry_t *>::iterator i = func_scopes.begin(); i != func_scopes.end(); i++)
+      for (auto i = scopes.begin(); i != scopes.end(); i++)
       {
-        auto possibleMain = *i;
-        if (possibleMain->name == name)
+        auto main = *i;
+        if (main->name == name)
         {
-          entry = possibleMain;
+          entry = main;
         }
       }
     }
@@ -179,7 +169,7 @@ public:
     return false;
   }
 
-  /* return [TYPE_UNDEFINED] if not exists */
+  /* return [TYPE_UNDEFINED] function does not exists */
   vector<TypeEnum> get_function_args(const string &identifier)
   {
     // debugTable("Getting functions args");
@@ -193,16 +183,12 @@ public:
 
   TypeEnum get_function_type(const string &identifier)
   {
-    if (!this->is_func_exists(identifier))
-    {
-      return TYPE_UNDEFINED;
-    }
-    return this->get_entry(identifier).type_info.type;
+    return !this->is_func_exists(identifier) ? TYPE_UNDEFINED : this->get_entry(identifier).type_info.type;
   }
 
   table_entry_t *get_last_function_in_scope()
   {
-    return func_scopes.back();
+    return scopes.back();
   }
 
   TypeEnum get_current_function_type()
@@ -212,11 +198,7 @@ public:
 
   bool is_var_exists(string name)
   {
-    if (exists(name) && !get_entry(name).type_info.is_func)
-    {
-      return true;
-    }
-    return false;
+    return (id_is_exists(name) && !get_entry(name).type_info.is_func);
   }
 
   ~SemanticTable(){};

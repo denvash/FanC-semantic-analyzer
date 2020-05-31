@@ -1,6 +1,6 @@
 #include "parser.hpp"
 
-SemanticTable semantic_table;
+SemanticTable table;
 int while_scope_count = 0;
 
 /*
@@ -108,8 +108,8 @@ inline void debugParser(const char *text)
 
 void init_program()
 {
-  semantic_table.init_table();
-  semantic_table.open_scope();
+  table.init_table();
+  table.open_scope();
 
   /* Insert print and printi to global scope */
   vector<TypeEnum> func_args;
@@ -124,18 +124,18 @@ void init_program()
   var_info_t print_func = {true, 0, TYPE_VOID, func_args};
 
   func_args.pop_back();
-  semantic_table.insert("print", &print_func, true);
+  table.insert("print", &print_func, true);
 
   func_args.push_back(TYPE_INT);
   var_info_t printi_func = {true, 0, TYPE_VOID, func_args};
-  semantic_table.insert("printi", &printi_func, true);
+  table.insert("printi", &printi_func, true);
 }
 
 void close_scope()
 {
   // debugParser("[parser:close-scope] closing scope");
   output::endScope();
-  auto entries = semantic_table.get_current_inner_scope();
+  auto entries = table.get_current_inner_scope();
   for (int i = 0; i < entries.size(); i++)
   {
     auto type = entries[i]->type_info.type;
@@ -162,7 +162,7 @@ void close_scope()
 
     output::printID(id, offset, type_str);
   }
-  semantic_table.close_scope();
+  table.close_scope();
   // debugParser("[parser:close-scope] scope closed after printing IDs");
   /* print types */
 }
@@ -170,17 +170,17 @@ void close_scope()
 void close_program()
 {
   // debugParser("close program");
-  if (!semantic_table.is_func_exists("main"))
+  if (!table.is_func_exists("main"))
   {
-    // debugParser("No func exists");
+    // debugParser("No func id_is_exists");
     err(output::errorMainMissing);
   }
-  if (semantic_table.get_function_args("main").front() != TYPE_VOID)
+  if (table.get_function_args("main").front() != TYPE_VOID)
   {
     // debugParser("Main with args");
     err(output::errorMainMissing);
   }
-  if (semantic_table.get_function_type("main") != TYPE_VOID)
+  if (table.get_function_type("main") != TYPE_VOID)
   {
     // debugParser("wrong type");
     err(output::errorMainMissing);
@@ -191,7 +191,7 @@ void close_program()
 void return_value_check(TypeEnum return_type)
 {
   // debugParser("return value check");
-  bool validConversion = converstion_map[return_type][semantic_table.get_current_function_type()];
+  bool validConversion = converstion_map[return_type][table.get_current_function_type()];
   if (!validConversion)
   {
     err(output::errorMismatch, yylineno);
@@ -201,178 +201,175 @@ void return_value_check(TypeEnum return_type)
 void func_init(atom_t y_identifier, atom_t y_arguments)
 {
   // debugParser("declaring function");
-  // cout << "[parser:function] " << *y_identifier.str_value << endl;
-  if (semantic_table.exists(*y_identifier.str_value))
+  // cout << "[parser:function] " << *y_identifier.STRING << endl;
+  if (table.id_is_exists(*y_identifier.STRING))
   {
-    err(output::errorDef, yylineno, *y_identifier.str_value);
+    err(output::errorDef, yylineno, *y_identifier.STRING);
   }
   var_info_t func;
   func.is_func = true;
-  func.type = y_identifier.e_type;
+  func.type = y_identifier.TYPE;
 
   /* if no arguments to function, args is null */
-  if (y_arguments.node == NULL)
+  if (y_arguments.NODE == NULL)
   {
     // debugParser("In declaring function, no arguments");
     func.arg_types.push_back(TYPE_VOID);
   }
   else
   {
-    auto args = dynamic_cast<FormalsList *>(y_arguments.node);
+    auto args = dynamic_cast<FormalsList *>(y_arguments.NODE);
     for (int i = 0; i < args->list.size(); i++)
     {
-      func.arg_types.push_back(args->list[i].e_type);
+      func.arg_types.push_back(args->list[i].TYPE);
     }
   }
   func.size = 0;
-  semantic_table.insert(*y_identifier.str_value, &func, true);
+  table.insert(*y_identifier.STRING, &func, true);
 
-  // semantic_table.open_scope();
-  semantic_table.func_info = func;
+  // table.open_scope();
+  table.func_info = func;
 }
 
-void variable_init(atom_t y_identifier, bool isLocal)
+void variable_init(atom_t y_identifier, bool is_local)
 {
   // debugParser("Declaring var");
-  // cout << "[parser:var]: " << type_to_string_map[y_identifier.e_type] << endl;
-  // cout << "[parser:str_value]: " << *y_identifier.str_value << endl;
-  if (semantic_table.exists(*y_identifier.str_value))
+  // cout << "[parser:var]: " << type_to_string_map[y_identifier.TYPE] << endl;
+  // cout << "[parser:STRING]: " << *y_identifier.STRING << endl;
+  if (table.id_is_exists(*y_identifier.STRING))
   {
-    err(output::errorDef, yylineno, *y_identifier.str_value);
+    err(output::errorDef, yylineno, *y_identifier.STRING);
   }
-  var_info_t var;
-  var.is_func = false;
-  var.type = y_identifier.e_type;
-  var.size = type_size_map[y_identifier.e_type];
-  semantic_table.insert(*y_identifier.str_value, &var, isLocal);
+  var_info_t var_info;
+  var_info.is_func = false;
+  var_info.type = y_identifier.TYPE;
+  var_info.size = type_size_map[y_identifier.TYPE];
+  table.insert(*y_identifier.STRING, &var_info, is_local);
 }
 
 void declare_formals(atom_t yy_formals)
 {
-  if (yy_formals.node == NULL)
+  if (yy_formals.NODE == NULL)
   {
     return;
   }
-  auto formals_list = dynamic_cast<FormalsList *>(yy_formals.node);
+  auto formals_list = dynamic_cast<FormalsList *>(yy_formals.NODE);
   for (int i = 0; i < formals_list->list.size(); i++)
   {
     variable_init(formals_list->list[i], false);
   }
-  /* reset offsets */
-  semantic_table.offsets.top() = 0;
+  table.offsets.top() = 0;
 }
 
 Exp::Exp(atom_t a, string op, atom_t b)
 {
-  /* check types */
   bool mismatch = false;
   if (op == "and")
   {
-    if (a.e_type != TYPE_BOOL || b.e_type != TYPE_BOOL)
+    if (a.TYPE != TYPE_BOOL || b.TYPE != TYPE_BOOL)
       err(output::errorMismatch, yylineno);
-    value = a.i_value && b.i_value;
+    value = a.INT && b.INT;
     type = TYPE_BOOL;
   }
   else if (op == "or")
   {
-    if (a.e_type != TYPE_BOOL || b.e_type != TYPE_BOOL)
+    if (a.TYPE != TYPE_BOOL || b.TYPE != TYPE_BOOL)
       err(output::errorMismatch, yylineno);
-    value = a.i_value || b.i_value;
+    value = a.INT || b.INT;
     type = TYPE_BOOL;
   }
   else if (op == "+")
   {
-    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
-        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+    if ((a.TYPE != TYPE_INT && a.TYPE != TYPE_BYTE) ||
+        (b.TYPE != TYPE_INT && b.TYPE != TYPE_BYTE))
       mismatch = true;
-    if (a.e_type == TYPE_INT || b.e_type == TYPE_INT)
+    if (a.TYPE == TYPE_INT || b.TYPE == TYPE_INT)
       type = TYPE_INT;
     else
       type = TYPE_BYTE;
-    value = a.i_value + b.i_value;
+    value = a.INT + b.INT;
   }
   else if (op == "-")
   {
-    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
-        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+    if ((a.TYPE != TYPE_INT && a.TYPE != TYPE_BYTE) ||
+        (b.TYPE != TYPE_INT && b.TYPE != TYPE_BYTE))
       mismatch = true;
-    if (a.e_type == TYPE_INT || b.e_type == TYPE_INT)
+    if (a.TYPE == TYPE_INT || b.TYPE == TYPE_INT)
       type = TYPE_INT;
     else
       type = TYPE_BYTE;
-    value = a.i_value - b.i_value;
+    value = a.INT - b.INT;
   }
   else if (op == "*")
   {
-    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
-        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+    if ((a.TYPE != TYPE_INT && a.TYPE != TYPE_BYTE) ||
+        (b.TYPE != TYPE_INT && b.TYPE != TYPE_BYTE))
       mismatch = true;
-    if (a.e_type == TYPE_INT || b.e_type == TYPE_INT)
+    if (a.TYPE == TYPE_INT || b.TYPE == TYPE_INT)
       type = TYPE_INT;
     else
       type = TYPE_BYTE;
-    value = a.i_value * b.i_value;
+    value = a.INT * b.INT;
   }
   else if (op == "/")
   {
-    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
-        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+    if ((a.TYPE != TYPE_INT && a.TYPE != TYPE_BYTE) ||
+        (b.TYPE != TYPE_INT && b.TYPE != TYPE_BYTE))
       mismatch = true;
-    if (a.e_type == TYPE_INT || b.e_type == TYPE_INT)
+    if (a.TYPE == TYPE_INT || b.TYPE == TYPE_INT)
       type = TYPE_INT;
     else
       type = TYPE_BYTE;
-    // value = a.i_value / b.i_value;
   }
   else if (op == "<")
   {
-    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
-        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+    if ((a.TYPE != TYPE_INT && a.TYPE != TYPE_BYTE) ||
+        (b.TYPE != TYPE_INT && b.TYPE != TYPE_BYTE))
       mismatch = true;
     type = TYPE_BOOL;
-    value = a.i_value < b.i_value;
+    value = a.INT < b.INT;
   }
   else if (op == "<=")
   {
-    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
-        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+    if ((a.TYPE != TYPE_INT && a.TYPE != TYPE_BYTE) ||
+        (b.TYPE != TYPE_INT && b.TYPE != TYPE_BYTE))
       mismatch = true;
     type = TYPE_BOOL;
-    value = a.i_value <= b.i_value;
+    value = a.INT <= b.INT;
   }
   else if (op == "==")
   {
-    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
-        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+    if ((a.TYPE != TYPE_INT && a.TYPE != TYPE_BYTE) ||
+        (b.TYPE != TYPE_INT && b.TYPE != TYPE_BYTE))
     {
       mismatch = true;
     }
     type = TYPE_BOOL;
-    value = a.i_value == b.i_value;
+    value = a.INT == b.INT;
   }
   else if (op == ">=")
   {
-    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
-        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+    if ((a.TYPE != TYPE_INT && a.TYPE != TYPE_BYTE) ||
+        (b.TYPE != TYPE_INT && b.TYPE != TYPE_BYTE))
       mismatch = true;
     type = TYPE_BOOL;
-    value = a.i_value >= b.i_value;
+    value = a.INT >= b.INT;
   }
   else if (op == ">")
   {
-    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
-        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+    if ((a.TYPE != TYPE_INT && a.TYPE != TYPE_BYTE) ||
+        (b.TYPE != TYPE_INT && b.TYPE != TYPE_BYTE))
       mismatch = true;
     type = TYPE_BOOL;
-    value = a.i_value > b.i_value;
+    value = a.INT > b.INT;
   }
   else if (op == "!=")
   {
-    if ((a.e_type != TYPE_INT && a.e_type != TYPE_BYTE) ||
-        (b.e_type != TYPE_INT && b.e_type != TYPE_BYTE))
+    if ((a.TYPE != TYPE_INT && a.TYPE != TYPE_BYTE) ||
+        (b.TYPE != TYPE_INT && b.TYPE != TYPE_BYTE))
       mismatch = true;
     type = TYPE_BOOL;
-    value = a.i_value != b.i_value;
+    value = a.INT != b.INT;
   }
   if (mismatch)
   {
@@ -382,14 +379,14 @@ Exp::Exp(atom_t a, string op, atom_t b)
 
 Call::Call(atom_t identifier, atom_t yy_exp_list)
 {
-  if (!semantic_table.is_func_exists(*identifier.str_value))
+  if (!table.is_func_exists(*identifier.STRING))
   {
-    err(output::errorUndefFunc, yylineno, *identifier.str_value);
+    err(output::errorUndefFunc, yylineno, *identifier.STRING);
   }
 
-  auto exp_list = dynamic_cast<ExpList *>(yy_exp_list.node);
+  auto exp_list = dynamic_cast<ExpList *>(yy_exp_list.NODE);
   auto exp_type_list = exp_list->list;
-  auto args_type = semantic_table.get_function_args(*identifier.str_value);
+  auto args_type = table.get_function_args(*identifier.STRING);
 
   if (args_type.size() != exp_type_list.size())
   {
@@ -404,12 +401,12 @@ Call::Call(atom_t identifier, atom_t yy_exp_list)
       auto typeUndefined = type_to_string_map[TYPE_UNDEFINED];
       args.front() = args.front() == typeVoid ? typeUndefined : args.front();
     }
-    err(output::errorPrototypeMismatch, yylineno, *identifier.str_value, args);
+    err(output::errorPrototypeMismatch, yylineno, *identifier.STRING, args);
   }
 
   for (int i = 0; i < args_type.size(); i++)
   {
-    bool is_valid = converstion_map[exp_type_list[i].e_type][args_type[i]];
+    bool is_valid = converstion_map[exp_type_list[i].TYPE][args_type[i]];
     if (!is_valid)
     {
       // debugParser("Function Call: Type mismatch");
@@ -418,20 +415,20 @@ Call::Call(atom_t identifier, atom_t yy_exp_list)
       {
         args.push_back(type_to_string_map[args_type[j]]);
       }
-      err(output::errorPrototypeMismatch, yylineno, *identifier.str_value, args);
+      err(output::errorPrototypeMismatch, yylineno, *identifier.STRING, args);
     }
   }
 
-  this->type = semantic_table.get_function_type(*identifier.str_value);
+  this->type = table.get_function_type(*identifier.STRING);
 }
 
 Call::Call(atom_t identifier)
 {
-  if (!semantic_table.is_func_exists(*identifier.str_value))
+  if (!table.is_func_exists(*identifier.STRING))
   {
-    err(output::errorUndefFunc, yylineno, *identifier.str_value);
+    err(output::errorUndefFunc, yylineno, *identifier.STRING);
   }
-  vector<TypeEnum> args_type = semantic_table.get_function_args(*identifier.str_value);
+  vector<TypeEnum> args_type = table.get_function_args(*identifier.STRING);
   if (args_type.size() != 1 || args_type.front() != TYPE_VOID)
   {
     vector<string> args;
@@ -441,23 +438,23 @@ Call::Call(atom_t identifier)
       args.front() = args.front() == "VOID" ? "" : args.front();
     }
 
-    err(output::errorPrototypeMismatch, yylineno, *identifier.str_value, args);
+    err(output::errorPrototypeMismatch, yylineno, *identifier.STRING, args);
   }
-  this->type = semantic_table.get_function_type(*identifier.str_value);
+  this->type = table.get_function_type(*identifier.STRING);
 }
 
 void assign_value(atom_t y_identifier, atom_t y_expression)
 {
-  if (!semantic_table.exists(*y_identifier.str_value))
+  if (!table.id_is_exists(*y_identifier.STRING))
   {
-    err(output::errorUndef, yylineno, *y_identifier.str_value);
+    err(output::errorUndef, yylineno, *y_identifier.STRING);
   }
-  auto entry = semantic_table.get_entry(*y_identifier.str_value);
+  auto entry = table.get_entry(*y_identifier.STRING);
   if (entry.type_info.is_func)
   {
-    err(output::errorUndef, yylineno, *y_identifier.str_value);
+    err(output::errorUndef, yylineno, *y_identifier.STRING);
   }
-  bool is_valid = converstion_map[y_expression.e_type][entry.type_info.type];
+  bool is_valid = converstion_map[y_expression.TYPE][entry.type_info.type];
   if (!is_valid)
   {
     err(output::errorMismatch, yylineno);
