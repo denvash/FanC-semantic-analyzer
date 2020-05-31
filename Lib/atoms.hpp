@@ -45,11 +45,11 @@ public:
     type = entry.type_info.type;
   }
   Exp(atom_t a, string op, atom_t b);
-  virtual int get_value()
+  int get_value()
   {
     return this->value;
   }
-  virtual TypeEnum get_type()
+  TypeEnum get_type()
   {
     return this->type;
   }
@@ -74,9 +74,9 @@ public:
 class IfExp : public Node
 {
 public:
-  IfExp(atom_t yy_exp)
+  IfExp(atom_t exp)
   {
-    if (yy_exp.TYPE != TYPE_BOOL)
+    if (exp.TYPE != TYPE_BOOL)
     {
       err(output::errorMismatch, yylineno);
     }
@@ -104,9 +104,9 @@ public:
   {
     list.push_back(exp);
   }
-  ExpList(atom_t exp_list_yy, atom_t yy_exp_added)
+  ExpList(atom_t yy_exp_list, atom_t yy_exp_added)
   {
-    ExpList *exp_list = dynamic_cast<ExpList *>(exp_list_yy.NODE);
+    auto exp_list = dynamic_cast<ExpList *>(yy_exp_list.NODE);
     this->list.insert(this->list.begin(), exp_list->list.begin(), exp_list->list.end());
     this->list.push_back(yy_exp_added);
   }

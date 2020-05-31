@@ -1,38 +1,31 @@
 %{
-    #include "output.hpp"
-    #include "parser.hpp"
-    #include <string>
-    #include <iostream>
-    #include <sstream>
-
-    extern int yylex();
-    extern int yylineno;
-
-    using namespace std;
-    void debugPrint(char const*);
-    void yyerror(char const*);
+  #include "output.hpp"
+  #include "parser.hpp"
+  #include <string>
+  #include <iostream>
+  #include <sstream>
+  #define INT_MAX 255
+  extern int yylex();
+  extern int yylineno;
+  using namespace std;
+  void debugPrint(char const*);
+  void yyerror(char const*);
 %}
-
 %token VOID INT BYTE B BOOL TRUE FALSE RETURN IF WHILE BREAK CONTINUE SC COMMA LBRACE RBRACE ID NUM STRING
-
 /* https://introcs.cs.princeton.edu/java/11precedence/ */
 %right ASSIGN
 %left OR
 %left AND
 %left EQ_RELOP
 %nonassoc RELOP
-
 %left PLUS_MINUS
 %left MUL_DIV
 %right NOT
 %right RPAREN
 %right LPAREN
-
 %nonassoc NOELSE
 %nonassoc ELSE
-
 %%
-
 Program :
     /* Pre Rule Execution */ {
       // debugPrint("Init program");
@@ -129,19 +122,19 @@ IfExp:
 WhileIn:
     %empty                          {
       while_scope_count++;
-    }
+    };
 
 WhileOut:
     %empty                          {
       while_scope_count--;
-    }
+    };
 
 WhileTypeCheck:
    WHILE LPAREN Exp RPAREN          {
       if ( $3.TYPE != TYPE_BOOL) {
         err(output::errorMismatch, yylineno);
       }
-   }
+   };
 
 Statement:
     /* For if () {}, two scopes should be opened */
@@ -223,8 +216,12 @@ Type:
       // debugPrint("Type INT");
       $$.TYPE = TYPE_INT;
     }
-    |   BYTE                        { $$.TYPE = TYPE_BYTE; }
-    |   BOOL                        { $$.TYPE = TYPE_BOOL; };
+    |   BYTE                        {
+      $$.TYPE = TYPE_BYTE;
+    }
+    |   BOOL                        {
+      $$.TYPE = TYPE_BOOL;
+    };
 
 Exp:
     LPAREN Exp RPAREN               {
@@ -260,7 +257,7 @@ Exp:
     | NUM B                         {
       $$.TYPE = TYPE_BYTE;
       $$.INT = $1.INT;
-      if ($1.INT > 255) {
+      if ($1.INT > INT_MAX) {
         auto s = static_cast<ostringstream*>( &(ostringstream() << $1.INT) )->str();
         err(output::errorByteTooLarge, yylineno, s);
       }
@@ -303,9 +300,7 @@ Exp:
       $$.NODE = new Exp($1, *$2.STRING, $3);
       $$.INT = $$.NODE->get_value();
       $$.TYPE = $$.NODE->get_type();
-    }
-    ;
-
+    };
 %%
 
 int main() {
